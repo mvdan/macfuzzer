@@ -1,4 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Main</string>
+    <string name="main_app_name">MacAddroid</string>
+    <string name="main_header">Welcome to MacAddroid. Your friendly MAC address changer.</string>
+    <string name="main_what_i_can_do">I can do a few actions for you:</string>
+    <string name="main_action_1">Change the MAC address to one you provide</string>
+    <string name="main_action_2">Change the MAC address to one a select at random</string>
+    <string name="main_what_i_want_to_do">In the future I want to be able to:</string>
+    <string name="main_future_action_1">Be able to change the MAC address whenever you connect to a new Wireless network</string>
+    <string name="main_future_action_2">Change the MAC address so it appears to be made by a specific manufacturer</string>
+
+    <string name="current_mac">Current MAC address</string>
+    <string name="next_mac">Proposed new MAC address</string>
+    <string name="button_apply">Apply</string>
+    <string name="button_cancel">Cancel</string>
+    <string name="blank"></string>
 </resources>
