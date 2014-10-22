@@ -16,7 +16,18 @@ Java_un_ique_macaddroid_NativeIOCtller_getCurrentMacAddr(JNIEnv* env,
         return (*env)->NewByteArray(env, 6);
     }
 
-    const char * iface = "wlan0";
+    jclass nioc = (*env)->GetObjectClass(env, thiz);
+
+    jfieldID interface_field = (*env)->GetFieldID(env, nioc,
+            "mInterface", "Ljava/lang/String;");
+    if (interface_field == NULL) {
+        return (*env)->NewByteArray(env, 6);
+    }
+
+    jstring jdev = (jstring) (*env)->GetObjectField(env, thiz, interface_field);
+    // Let's hardcode wlan0, for now.
+    // const char * iface = "wlan0";
+    const char * iface = (*env)->GetStringUTFChars(env, jdev, JNI_FALSE);
     struct ifreq dev;
     strncpy(dev.ifr_name, iface, 6);
     int sock = socket (AF_INET, SOCK_DGRAM, 0);

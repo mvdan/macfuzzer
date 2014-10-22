@@ -15,6 +15,7 @@ public class Main extends Activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         Layer2Address newNet = new Layer2Address();
+        // Let's hardcode wlan0, for now
         newNet.setInterfaceName("wlan0");
         NativeIOCtller ctller = new NativeIOCtller(newNet);
         newNet.setAddress(ctller.getCurrentMacAddr());
