@@ -5,6 +5,8 @@ import android.os.Bundle;
 import un.ique.macaddroid.Layer2Address;
 import un.ique.macaddroid.NativeIOCtller;
 import android.widget.TextView;
+import android.view.View;
+import android.content.Intent;
 
 public class Main extends Activity
 {
@@ -25,5 +27,11 @@ public class Main extends Activity
         if (macField != null) {
             macField.setText(addr);
         }
+    }
+
+    public void callRandomMac(View view)
+    {
+        Intent intent = new Intent(this, RandomMac.class);
+        startActivity(intent);
     }
 }

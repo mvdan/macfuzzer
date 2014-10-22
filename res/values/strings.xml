@@ -9,9 +9,13 @@
     <string name="main_future_action_1">Be able to change the MAC address whenever you connect to a new Wireless network</string>
     <string name="main_future_action_2">Change the MAC address so it appears to be made by a specific manufacturer</string>
 
+    <string name="randommac_app_name">Randomize MAC Address</string>
+    <string name="randommac_header">Compare the current MAC address and the proposed new MAC address."</string>
+    <string name="randommac_randomize">I don\'t like this one. Create another MAC Address</string>
+
     <string name="current_mac">Current MAC address: </string>
     <string name="next_mac">Proposed new MAC address: </string>
-    <string name="button_apply">Apply</string>
+    <string name="button_apply">Use this new MAC address</string>
     <string name="button_cancel">Cancel</string>
     <string name="blank"></string>
 </resources>
