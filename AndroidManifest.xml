@@ -3,7 +3,9 @@
       package="un.ique.macaddroid"
       android:versionCode="1"
       android:versionName="1.0">
-    <application android:label="@string/main_app_name" android:icon="@drawable/ic_launcher">
+    <application android:label="@string/main_app_name"
+                 android:debuggable="true"
+                 android:icon="@drawable/ic_launcher" >
         <activity android:name="Main"
                   android:label="@string/main_app_name">
             <intent-filter>
