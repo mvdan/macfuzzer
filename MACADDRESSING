@@ -1,0 +1,15 @@
+Copied from Wikipedia 2014/10/20
+
+This is provided for reference for those too lazy to read the webpage.
+
+All three numbering systems use the same format and differ only in the length of the identifier. Addresses can either be universally administered addresses or locally administered addresses. A universally administered address is uniquely assigned to a device by its manufacturer. The first three octets (in transmission order) identify the organization that issued the identifier and are known as the Organizationally Unique Identifier (OUI).[3] The following three (MAC-48 and EUI-48) or five (EUI-64) octets are assigned by that organization in nearly any manner they please, subject to the constraint of uniqueness. The IEEE has a target lifetime of 100 years for applications using MAC-48 space, but encourages adoption of EUI-64s instead.[3] A locally administered address is assigned to a device by a network administrator, overriding the burned-in address. Locally administered addresses do not contain OUIs.
+
+Universally administered and locally administered addresses are distinguished by setting the second-least-significant bit of the most significant byte of the address. This bit is also referred to as the U/L bit, short for Universal/Local, which identifies how the address is administered. If the bit is 0, the address is universally administered. If it is 1, the address is locally administered. In the example address 06-00-00-00-00-00 the most significant byte is 06 (hex), the binary form of which is 00000110, where the second-least-significant bit is 1. Therefore, it is a locally administered address.[4] Consequently, this bit is 0 in all OUIs.
+
+If the least significant bit of the most significant octet of an address is set to 0 (zero), the frame is meant to reach only one receiving NIC.[5] This type of transmission is called unicast. A unicast frame is transmitted to all nodes within the collision domain, which typically ends at the nearest network switch or router. A switch will forward a unicast frame through all of its ports (except for the port that originated the frame) if the switch has no knowledge of which port leads to that MAC address, or just to the proper port if it does have knowledge.[6][not in citation given] Only the node with the matching hardware MAC address will accept the frame; network frames with non-matching MAC-addresses are ignored, unless the device is in promiscuous mode.
+
+
+[3] http://standards.ieee.org/develop/regauth/tut/eui.pdf
+[4] http://standards.ieee.org/develop/regauth/tut/macgrp.pdf
+[5] http://standards.ieee.org/develop/regauth/tut/fibre.pdf
+[6] https://en.m.wikipedia.org/wiki/MAC_Table
