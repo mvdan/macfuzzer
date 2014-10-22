@@ -36,4 +36,14 @@ public class RandomMac extends Activity {
             nextMacField.setText(mNewNet.formatAddress());
         }
     }
+
+    public void showNewAddress(View view) {
+        byte[] nextAddr = mNewNet.generateNewAddress();
+        mNewNet = new Layer2Address(nextAddr, dev);
+        TextView nextMacField = (TextView)
+            findViewById(R.id.randommac_nextmacaddress);
+        if (nextMacField != null) {
+            nextMacField.setText(mNewNet.formatAddress());
+        }
+    }
 }
