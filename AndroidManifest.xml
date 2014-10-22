@@ -3,6 +3,8 @@
       package="un.ique.macaddroid"
       android:versionCode="1"
       android:versionName="1.0">
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application android:label="@string/main_app_name"
                  android:debuggable="true"
                  android:icon="@drawable/ic_launcher" >
