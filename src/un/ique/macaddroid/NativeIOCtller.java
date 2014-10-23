@@ -7,7 +7,7 @@ public class NativeIOCtller {
     private byte[] mAddr;
 
     static {
-        System.loadLibrary("native-ioctller");
+        System.loadLibrary("native_ioctller");
     }
 
     public NativeIOCtller(Layer2Address macAddr) {

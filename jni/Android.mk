@@ -2,7 +2,6 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
-LOCAL_MODULE    := native-ioctller
-LOCAL_SRC_FILES := native-ioctller.c
-
+LOCAL_MODULE    := native_ioctller
+LOCAL_SRC_FILES := native_ioctller.c
 include $(BUILD_SHARED_LIBRARY)

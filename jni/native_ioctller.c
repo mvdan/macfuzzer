@@ -7,6 +7,8 @@
 #include <sys/ioctl.h>
 #include <net/if.h>
 #include <jni.h>
+#include <sys/types.h>
+#include <errno.h>
 
 jbyteArray
 Java_un_ique_macaddroid_NativeIOCtller_getCurrentMacAddr(JNIEnv* env,
@@ -43,6 +45,7 @@ Java_un_ique_macaddroid_NativeIOCtller_getCurrentMacAddr(JNIEnv* env,
     char * macAddr = dev.ifr_hwaddr.sa_data;
     (*env)->SetByteArrayRegion(env, currAddr, 0, 6, macAddr);
 
+    close(sock);
     return currAddr;
 }
 
@@ -73,4 +76,71 @@ Java_un_ique_macaddroid_NativeIOCtller_getCurrentMacAddrError(JNIEnv* env,
     }
 
     return (*env)->NewStringUTF(env, "All good!");
+}
+
+int set_mac_addr(const char * iface, const uint8_t * mac) {
+    struct ifreq dev;
+    int i;
+    strncpy(dev.ifr_name, iface, 6);
+
+    int sock = socket (AF_INET, SOCK_DGRAM, 0);
+    if (sock < 0) {
+        return errno;
+    }
+    if (ioctl(sock, SIOCGIFHWADDR, &dev) < 0) {
+        close(sock);
+        return errno;
+    }
+    for (i=0; i<6; i++) {
+        dev.ifr_hwaddr.sa_data[i] = mac[i];
+    }
+    if (ioctl(sock, SIOCSIFHWADDR, &dev) < 0) {
+        close(sock);
+        return -errno;
+    }
+
+    close(sock);
+    return 0;
+}
+
+jint
+Java_un_ique_macaddroid_NativeIOCtller_setMacAddr(JNIEnv* env,
+                                                  jobject thiz,
+                                                  jbyteArray mac)
+{
+    uint8_t new_mac[6];
+
+    (*env)->GetByteArrayRegion(env, mac, 0, 6, new_mac);
+
+    jclass nioc = (*env)->GetObjectClass(env, thiz);
+
+    jfieldID interface_field = (*env)->GetFieldID(env, nioc,
+            "mInterface", "Ljava/lang/String;");
+    if (interface_field == NULL) {
+        return -1;
+    }
+
+    /*uid_t me = geteuid();
+    gid_t gme = getgid();
+    if (setgid(0) || seteuid(0)) {
+        return -2;
+    }*/
+    jstring jdev = (jstring) (*env)->GetObjectField(env, thiz, interface_field);
+    const char * iface = (*env)->GetStringUTFChars(env, jdev, JNI_FALSE);
+    (*env)->ReleaseStringUTFChars(env, jdev, iface);
+    int retval = set_mac_addr(iface, new_mac);
+    /*if (setgid(gme) || seteuid(me)) {
+        return retval << 2 | 1;
+    }*/
+    return retval;
+}
+
+jstring
+Java_un_ique_macaddroid_NativeIOCtller_getErrorString(JNIEnv* env,
+                                                      jobject thiz,
+                                                      jint errcode)
+{
+    char strerrmsg[40];
+    snprintf(strerrmsg, 39, "%d: %s", (int)errcode, strerror((int)errcode));
+    return (*env)->NewStringUTF(env, strerrmsg);
 }
