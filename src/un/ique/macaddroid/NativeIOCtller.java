@@ -19,4 +19,5 @@ public class NativeIOCtller {
     public native String getCurrentMacAddrError();
 
     public native int setMacAddr(byte[] mac);
+    public native String getErrorString(int errcode);
 }
