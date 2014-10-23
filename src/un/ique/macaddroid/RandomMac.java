@@ -7,11 +7,21 @@ import un.ique.macaddroid.NativeIOCtller;
 import android.widget.TextView;
 import android.view.View;
 import android.content.Intent;
+import java.lang.Process;
+import java.io.IOException;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.io.FileOutputStream;
+import java.io.File;
+import android.content.res.Resources;
+import android.content.Context;
 
 public class RandomMac extends Activity {
     // Let's hardcode wlan0, for now
     private String dev = "wlan0";
     private Layer2Address mNewNet;
+    private final String binaryName = "change_mac";
+    private String pathToBinary = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +45,15 @@ public class RandomMac extends Activity {
         if (nextMacField != null) {
             nextMacField.setText(mNewNet.formatAddress());
         }
+
+        copyBinary();
+        getPathToFile();
+        File cm = new File(pathToBinary, binaryName);
+        if (cm.exists() && cm.isFile()) {
+            cm.setExecutable(true);
+        } else {
+            finish();
+        }
     }
 
     public void showNewAddress(View view) {
@@ -46,4 +65,57 @@ public class RandomMac extends Activity {
             nextMacField.setText(mNewNet.formatAddress());
         }
     }
+
+    public void applyNewAddress(View view) {
+        NativeIOCtller ctller = new NativeIOCtller(mNewNet);
+        int err = 11;
+        try {
+            String[] args = {"su", "0", "/data/data/un.ique.macaddroid/files/change_mac", dev, mNewNet.formatAddress()};
+            Process root_shell = Runtime.getRuntime().exec(args);
+            try {
+                 root_shell.waitFor();
+                 err = root_shell.exitValue();
+            } catch (InterruptedException e) {
+            }
+        } catch (IOException e) {
+            return;
+        }
+        //int err = ctller.setMacAddr(mNewNet.getAddress());
+        String errorcode = ctller.getErrorString(err);
+        mNewNet.setAddress(ctller.getCurrentMacAddr());
+        String addr = mNewNet.formatAddress();
+        TextView macField = (TextView)
+            findViewById(R.id.randommac_macaddress);
+        if (macField != null) {
+            macField.setText(addr);
+        }
+    }
+
+    public void copyBinary() {
+        try {
+        InputStream is = getResources().openRawResource(R.raw.change_mac);
+        FileOutputStream fos = openFileOutput(binaryName, Context.MODE_PRIVATE);
+        int bytesRead = -1, round = 0;
+        byte[] byteBuffer = new byte[100];
+        while (bytesRead != 0) {
+            bytesRead = is.read(byteBuffer, round, round + byteBuffer.length);
+            if (bytesRead != byteBuffer.length) {
+                fos.write(byteBuffer, round, round + bytesRead);
+                break;
+            }
+            fos.write(byteBuffer, byteBuffer.length*round, round + byteBuffer.length);
+        }
+        fos.close();
+        is.close();
+        } catch ( FileNotFoundException e) {
+        } catch ( IOException e) {
+        }
+    }
+
+    public void getPathToFile() {
+        File file = getFilesDir();
+        if (!file.isDirectory())
+            return;
+        pathToBinary = file.getAbsolutePath();
+     }
 }

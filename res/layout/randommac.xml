@@ -63,6 +63,7 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:text="@string/button_apply"
+    android:onClick="applyNewAddress"
     />
 <TextView
     android:layout_width="fill_parent"
