@@ -2,9 +2,22 @@
 #include <string.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <sys/prctl.h>
+#include <unistd.h>
 #include <errno.h>
+#include <linux/capability.h>
+
+/* android-20 doesn't support these by default */
+#ifndef PR_CAPBSET_READ
+#define PR_CAPBSET_READ 23
+#endif
+#ifndef PR_CAPBSET_DROP
+#define PR_CAPBSET_DROP 24
+#endif
 
 int set_mac_addr(char * iface, char * mac);
+int drop_unneeded_caps();
+int confirm_caps_dropped();
 
 const uint8_t mac_hex_length = 17;
 const uint8_t mac_byte_length = 6;
@@ -14,6 +27,14 @@ int main(int argc, char * argv[])
     char * iface;
     uint8_t mac[mac_byte_length];
     int i;
+
+    if (drop_unneeded_caps()) {
+        return -1;
+    }
+
+    if (confirm_caps_dropped()) {
+        return -1;
+    }
 
     if (argc > 3) {
         return -1;
@@ -94,3 +115,32 @@ int accept_from_stdin(const char * iface)
 {
     return 0;
 }
+
+int drop_unneeded_caps()
+{
+    int i;
+    for (i = 0; prctl(PR_CAPBSET_READ, i, 0, 0, 0) == 1; i++) {
+        if (i == CAP_NET_ADMIN) {
+            continue;
+        }
+        if (prctl(PR_CAPBSET_DROP, i, 0, 0, 0)) {
+            fprintf(stderr, "Failed to drop cap: %d\n", i);
+            return -1;
+        }
+    }
+    return 0;
+}
+
+
+#define CHROOT_DIR "/tmp"
+int confirm_caps_dropped()
+{
+    if (chroot(CHROOT_DIR)) {
+        if (errno == EPERM) {
+            return 0;
+        }
+    }
+    fprintf(stderr, "We can chroot, cap drop failed!\n");
+    return -1;
+}
+#undef CHROOT_DIR
