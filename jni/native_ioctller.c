@@ -78,7 +78,7 @@ Java_un_ique_macaddroid_NativeIOCtller_getCurrentMacAddrError(JNIEnv* env,
     return (*env)->NewStringUTF(env, "All good!");
 }
 
-int set_mac_addr(const char * iface, const uint8_t * mac) {
+int nativeioc_set_mac_addr(const char * iface, const uint8_t * mac) {
     struct ifreq dev;
     int i;
     strncpy(dev.ifr_name, iface, 6);
@@ -128,7 +128,7 @@ Java_un_ique_macaddroid_NativeIOCtller_setMacAddr(JNIEnv* env,
     jstring jdev = (jstring) (*env)->GetObjectField(env, thiz, interface_field);
     const char * iface = (*env)->GetStringUTFChars(env, jdev, JNI_FALSE);
     (*env)->ReleaseStringUTFChars(env, jdev, iface);
-    int retval = set_mac_addr(iface, new_mac);
+    int retval = nativeioc_set_mac_addr(iface, new_mac);
     /*if (setgid(gme) || seteuid(me)) {
         return retval << 2 | 1;
     }*/
