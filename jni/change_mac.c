@@ -25,61 +25,36 @@
 #define PR_SET_NO_NEW_PRIVS 38
 #endif
 
-int set_mac_addr(char * iface, char * mac);
-int drop_unneeded_caps();
-int confirm_caps_dropped();
+int nativeioc_set_mac_addr(const char * iface, const char * mac);
+static int confirm_caps_dropped(void);
+static int can_drop_caps(void);
+static int finish_what_we_started(int argc, const char * argv[]);
 
 const uint8_t mac_hex_length = 17;
 const uint8_t mac_byte_length = 6;
 
-int main(int argc, char * argv[])
+int
+main(int argc, char * argv[])
 {
-    char * iface;
-    uint8_t mac[mac_byte_length];
-    int i;
+    if (can_drop_caps()) {
+        fprintf(stderr, "PR_CAPBSET_DROP not available. grrrr! %s\n",
+                        strerror(errno));
+        return -1;
+    }
+
+    if (lock_it_down()) {
+        return -1;
+    }
 
     if (drop_unneeded_caps()) {
         return -1;
     }
 
-    if (confirm_caps_dropped()) {
-        return -1;
-    }
-
-    if (argc > 3) {
-        return -1;
-    }
-    if (argc == 2) {
-        return accept_from_stdin(argv[1]);
-    }
-    iface = argv[1];
-
-    fprintf(stderr, "Dev: %s. Beginning address format verification.\n", iface);
-    if (verify_string_format(argv[2])) {
-        fprintf(stderr, "Address format failed: %s, %zd.\n", argv[2], strlen(argv[2]));
-        return -1;
-    }
-    fprintf(stderr, "Address format passed.\n");
-
-    if (convert_hex_to_byte(argv[2], mac)) {
-        fprintf(stderr, "Conversion from hex to byte failed.\n");
-        return -1;
-    }
-    fprintf(stderr, "Conversion from hex to byte passed.\n");
-
-    int retval = set_mac_addr(iface, mac);
-    if (retval) {
-        fprintf(stderr, "set_mac_addr() returned with %d, %s.\n", retval, strerror(errno));
-        fprintf(stderr, "6 MAC octets: ");
-        int i;
-        for (i = 0; i < mac_byte_length; i++)
-            fprintf(stderr, "%d ", mac[i]);
-    }
-    fprintf(stderr, "set_mac_addr() successful.\n");
-    return retval;
+    return make_it_so(argc, (const char **)argv);
 }
 
-int verify_string_format(const char * str_mac)
+static int
+verify_string_format(const char * str_mac)
 {
     int i = 0;
     if (strlen(str_mac) != mac_hex_length) {
@@ -95,7 +70,8 @@ int verify_string_format(const char * str_mac)
     return 0;
 }
 
-int convert_hex_to_byte(const char * strmac, uint8_t * mac)
+static int
+convert_hex_to_byte(const char * strmac, uint8_t * mac)
 {
     int i = 0, octet = 0;
     char hex[3];
@@ -106,16 +82,18 @@ int convert_hex_to_byte(const char * strmac, uint8_t * mac)
         long topfour = strtoul(hex, NULL, 16);
         //long bottomfour = strtoul(hex, NULL, 16);
         if (strmac[i] != ':' && i < mac_hex_length) {
-            fprintf(stderr, "Found '%c' at %d when we expected a colon.\n", strmac[i], i);
+            fprintf(stderr, "Found '%c' at %d when we expected a "
+                            "colon.\n", strmac[i], i);
             return -1;
         }
-        fprintf(stderr, "octet reached %d, i = %d. %ld\n", octet, i, topfour);
+        fprintf(stderr, "octet reached %d, i = %d. %ld\n", octet, i,
+                        topfour);
         mac[octet++] = topfour & 0xFF;
         if (octet > 5) {
             fprintf(stderr, "octet reached 5, i = %d.\n", i);
             break;
         }
-        
+
     }
 
     return 0;
