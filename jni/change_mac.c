@@ -33,26 +33,6 @@ static int finish_what_we_started(int argc, const char * argv[]);
 const uint8_t mac_hex_length = 17;
 const uint8_t mac_byte_length = 6;
 
-int
-main(int argc, char * argv[])
-{
-    if (can_drop_caps()) {
-        fprintf(stderr, "PR_CAPBSET_DROP not available. grrrr! %s\n",
-                        strerror(errno));
-        return -1;
-    }
-
-    if (lock_it_down()) {
-        return -1;
-    }
-
-    if (drop_unneeded_caps()) {
-        return -1;
-    }
-
-    return make_it_so(argc, (const char **)argv);
-}
-
 static int
 verify_string_format(const char * str_mac)
 {
@@ -499,4 +479,24 @@ confirm_caps_dropped(void)
     return -1;
 }
 #undef CHROOT_DIR
+
+int
+main(int argc, char * argv[])
+{
+    if (can_drop_caps()) {
+        fprintf(stderr, "PR_CAPBSET_DROP not available. grrrr! %s\n",
+                        strerror(errno));
+        return -1;
+    }
+
+    if (lock_it_down()) {
+        return -1;
+    }
+
+    if (drop_unneeded_caps()) {
+        return -1;
+    }
+
+    return make_it_so(argc, (const char **)argv);
+}
 
