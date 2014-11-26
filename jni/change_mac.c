@@ -214,6 +214,23 @@ lock_it_down(void)
     return 0;
 }
 
+static int
+make_it_so(int argc, const char * argv[])
+{
+    int pid = fork();
+    if (pid > 0) {
+        int status;
+        int ret = wait(&status);
+        return ret || status;
+    } else if (pid == 0) {
+        return finish_what_we_started(argc, argv);
+    } else {
+        fprintf(stderr, "Failed to fork after dropping caps: %s\n",
+                        strerror(errno));
+        return pid;
+    }
+}
+
 #if 0 /* Bionic doesn't implement getgrnam_r() nor getpwuid_r()! */
 static int
 get_group_id(const char *grpname, gid_t *gid)
@@ -424,16 +441,84 @@ switch_user(uid_t uid)
     return 0;
 }
 
-
-#define CHROOT_DIR "/tmp"
-int confirm_caps_dropped()
+static int
+finish_what_we_started(int argc, const char * argv[])
 {
-    if (chroot(CHROOT_DIR)) {
+    const char * iface;
+    uint8_t mac[mac_byte_length];
+    int i;
+
+    if (argc > 4) {
+        return -1;
+    }
+    if (argc == 2) {
+        return accept_from_stdin(argv[1]);
+    }
+    iface = argv[1];
+
+    fprintf(stderr, "Dev: %s. Beginning address format "
+                    "verification.\n", iface);
+    if (verify_string_format(argv[2])) {
+        fprintf(stderr, "Address format failed: %s, %zd.\n", argv[2],
+                        strlen(argv[2]));
+        return -1;
+    }
+    fprintf(stderr, "Address format passed.\n");
+
+    if (convert_hex_to_byte(argv[2], mac)) {
+        fprintf(stderr, "Conversion from hex to byte failed.\n");
+        return -1;
+    }
+    fprintf(stderr, "Conversion from hex to byte passed.\n");
+    uid_t uid = get_uid(argv[3]);
+    if (uid < 1) {
+        return -1;
+    }
+    if (switch_user(uid)) {
+        return -1;
+    }
+
+    if (confirm_caps_dropped()) {
+        return -1;
+    }
+
+    int retval = nativeioc_set_mac_addr(iface, mac);
+    if (retval) {
+        fprintf(stderr, "set_mac_addr() returned with %d, %s.\n",
+                        retval, strerror(errno));
+        fprintf(stderr, "6 MAC octets: ");
+        int i;
+        for (i = 0; i < mac_byte_length; i++)
+            fprintf(stderr, "%d ", mac[i]);
+    }
+    fprintf(stderr, "set_mac_addr() successful.\n");
+    return retval;
+}
+
+#define CHROOT_DIR "/mnt"
+static int
+confirm_caps_dropped(void)
+{
+    /*if (prctl(PR_CAPBSET_DROP, CAP_SYS_CHROOT, 0, 0, 0) == 0) {
+        fprintf(stderr, "We successfully dropped cap CAP_SYS_CHROOT "
+                        "despite dropping privs and switching users\n");
+        return -1;
+    }*/
+    if (chroot(CHROOT_DIR) == -1) {
         if (errno == EPERM) {
             return 0;
         }
+        if (errno == ENOENT) {
+            fprintf(stderr, "%s isn't a dir. Please report this.\n",
+                    CHROOT_DIR);
+            /* It's likely safe to assume this would've
+             * successfully failed due to nocap if CHROOT_DIR existed,
+             * but if we don't deny this then we'll never know this
+             * is a bad check for some devices. */
+        }
     }
-    fprintf(stderr, "We can chroot, cap drop failed!\n");
+    fprintf(stderr, "We think we can still chroot, cap drop failed!\n");
     return -1;
 }
 #undef CHROOT_DIR
+
