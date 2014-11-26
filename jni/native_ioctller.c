@@ -144,3 +144,11 @@ Java_un_ique_macaddroid_NativeIOCtller_getErrorString(JNIEnv* env,
     snprintf(strerrmsg, 39, "%d: %s", (int)errcode, strerror((int)errcode));
     return (*env)->NewStringUTF(env, strerrmsg);
 }
+
+jint
+Java_un_ique_macaddroid_NativeIOCtller_getCurrentUID(JNIEnv* env,
+                                                     jobject thiz)
+{
+   return (jint)getuid();
+}
+

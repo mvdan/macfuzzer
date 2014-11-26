@@ -69,8 +69,9 @@ public class RandomMac extends Activity {
     public void applyNewAddress(View view) {
         NativeIOCtller ctller = new NativeIOCtller(mNewNet);
         int err = 11;
+        String uid = Integer.toString(ctller.getCurrentUID());
         try {
-            String[] args = {"su", "0", "/data/data/un.ique.macaddroid/files/change_mac", dev, mNewNet.formatAddress()};
+            String[] args = {"su", "0", "/data/data/un.ique.macaddroid/files/change_mac", dev, mNewNet.formatAddress(), uid};
             Process root_shell = Runtime.getRuntime().exec(args);
             try {
                  root_shell.waitFor();
