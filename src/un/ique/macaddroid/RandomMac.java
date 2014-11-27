@@ -71,7 +71,9 @@ public class RandomMac extends Activity {
         int err = 11;
         String uid = Integer.toString(ctller.getCurrentUID());
         try {
-            String[] args = {"su", "0", "/data/data/un.ique.macaddroid/files/change_mac", dev, mNewNet.formatAddress(), uid};
+            String[] args = {"su", "0",
+                    "/data/data/un.ique.macaddroid/files/change_mac",
+                    dev, mNewNet.formatAddress(), uid};
             Process root_shell = Runtime.getRuntime().exec(args);
             try {
                  root_shell.waitFor();
@@ -94,17 +96,21 @@ public class RandomMac extends Activity {
 
     public void copyBinary() {
         try {
-        InputStream is = getResources().openRawResource(R.raw.change_mac);
-        FileOutputStream fos = openFileOutput(binaryName, Context.MODE_PRIVATE);
+        InputStream is =
+                getResources().openRawResource(R.raw.change_mac);
+        FileOutputStream fos = openFileOutput(binaryName,
+                                              Context.MODE_PRIVATE);
         int bytesRead = -1, round = 0;
         byte[] byteBuffer = new byte[100];
         while (bytesRead != 0) {
-            bytesRead = is.read(byteBuffer, round, round + byteBuffer.length);
+            bytesRead = is.read(byteBuffer, round,
+                                round + byteBuffer.length);
             if (bytesRead != byteBuffer.length) {
                 fos.write(byteBuffer, round, round + bytesRead);
                 break;
             }
-            fos.write(byteBuffer, byteBuffer.length*round, round + byteBuffer.length);
+            fos.write(byteBuffer, byteBuffer.length*round,
+                      round + byteBuffer.length);
         }
         fos.close();
         is.close();
