@@ -7,4 +7,4 @@ native:
 	install -v libs/armeabi/libnative_ioctller.so res/raw/
 
 install: all
-	adb install -r bin/Macaddroid-debug.apk
+	adb install -r bin/ChMacAddroid-debug.apk

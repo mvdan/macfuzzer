@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-      package="un.ique.macaddroid"
+      package="un.ique.chmacaddroid"
       android:versionCode="1"
       android:versionName="1.0">
     <uses-permission android:name="android.permission.INTERNET" />
@@ -18,10 +18,10 @@
         </activity>
         <activity android:name="RandomMac"
                   android:label="@string/randommac_app_name"
-                  android:parentActivityName="un.ique.macaddroid.Main" >
+                  android:parentActivityName="un.ique.chmacaddroid.Main" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="un.ique.macaddroid.Main" />
+                android:value="un.ique.chmacaddroid.Main" />
         </activity>
     </application>
 </manifest>
