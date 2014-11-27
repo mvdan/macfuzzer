@@ -42,7 +42,7 @@ public class FileStuff
     public File copyBinaryFile() {
         try {
             InputStream is =
-                    mCurrAct.getResources().openRawResource(R.raw.change_mac);
+                    mCurrAct.getResources().openRawResource(R.raw.chmacaddr);
             FileOutputStream fos = mCurrAct.openFileOutput(binaryName,
                                                   Context.MODE_PRIVATE);
             int bytesRead = -1, round = 0;

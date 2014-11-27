@@ -16,7 +16,7 @@ include $(BUILD_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
 
-LOCAL_MODULE    := change_mac
-LOCAL_SRC_FILES := change_mac.c
+LOCAL_MODULE    := chmacaddr
+LOCAL_SRC_FILES := chmacaddr.c
 LOCAL_STATIC_LIBRARIES := native_ioctller_static
 include $(BUILD_EXECUTABLE)
