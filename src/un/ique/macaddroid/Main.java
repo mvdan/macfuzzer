@@ -4,9 +4,11 @@ import android.app.Activity;
 import android.os.Bundle;
 import un.ique.macaddroid.Layer2Address;
 import un.ique.macaddroid.NativeIOCtller;
+import un.ique.macaddroid.FileStuff;
 import android.widget.TextView;
 import android.view.View;
 import android.content.Intent;
+import java.io.File;
 
 public class Main extends Activity
 {
@@ -27,6 +29,10 @@ public class Main extends Activity
         if (macField != null) {
             macField.setText(addr);
         }
+        /* TODO This can be removed. It's only here to make
+         * debugging easier. */
+        FileStuff fs = new FileStuff(this);
+        File exe = fs.copyBinaryFile();
     }
 
     @Override
@@ -52,4 +58,5 @@ public class Main extends Activity
         Intent intent = new Intent(this, RandomMac.class);
         startActivity(intent);
     }
+
 }
