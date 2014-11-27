@@ -427,7 +427,7 @@ finish_what_we_started(int argc, const char * argv[])
     uint8_t mac[mac_byte_length];
     int i;
 
-    if (argc > 4) {
+    if (argc != 4) {
         return -1;
     }
     if (argc == 2) {
