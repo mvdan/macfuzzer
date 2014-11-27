@@ -32,7 +32,7 @@ import java.io.FileNotFoundException;
 
 public class FileStuff
 {
-    private final String binaryName = "change_mac";
+    private final String binaryName = "chmacaddr";
     private Activity mCurrAct = null;
 
     public FileStuff(Activity act) {
