@@ -8,3 +8,14 @@ native:
 
 install: all
 	adb install -r bin/ChMacAddroid-debug.apk
+
+clean:
+	ant clean && cd tests && ant clean
+
+test: clean install
+	  cd tests && ant debug && \
+	  adb install -r bin/ChMacAddroidTest-debug.apk && \
+	  adb logcat -c && \
+	  ant test && \
+	  adb logcat -C
+
