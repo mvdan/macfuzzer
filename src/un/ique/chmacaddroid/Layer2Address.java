@@ -63,15 +63,7 @@ public class Layer2Address {
         {
             // Let's generate some random bytes
             SecureRandom sr = new SecureRandom();
-            byte[] output = new byte[6];
-            sr.nextBytes(output);
-
-            for (int i = 0; i < 6; i++) {
-                if (output[i] < 0) {
-                    output[i] = (byte) (0x40 - (int)output[i]);
-                }
-                newAddr[i] = output[i];
-            } 
+            sr.nextBytes(newAddr);
         }
 
         // Always pretend to be the burned-in address
