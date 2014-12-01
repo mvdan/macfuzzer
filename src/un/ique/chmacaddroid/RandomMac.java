@@ -29,7 +29,6 @@ import un.ique.chmacaddroid.FileStuff;
 import android.widget.TextView;
 import android.view.View;
 import android.content.Intent;
-import java.lang.Process;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.io.File;
@@ -74,32 +73,16 @@ public class RandomMac extends Activity {
     }
 
     public void applyNewAddress(View view) {
-        String pathToBinary = "";
         NativeIOCtller ctller = new NativeIOCtller(mNewNet);
-        int err = 11;
         String uid = Integer.toString(ctller.getCurrentUID());
         FileStuff fs = new FileStuff(this);
         File exe = fs.copyBinaryFile();
+        /* TOCTOU but this let's us handle the failure easier */
         if (exe == null) {
             // TODO Show a useful message like "Please restart this app.
             // We're broken?"
-        } else {
-            pathToBinary = exe.getAbsolutePath();
         }
-        try {
-            String[] args = {"su", "0",
-                             pathToBinary, dev,
-                             mNewNet.formatAddress(), uid};
-            Process root_shell = Runtime.getRuntime().exec(args);
-            try {
-                 root_shell.waitFor();
-                 err = root_shell.exitValue();
-            } catch (InterruptedException e) {
-            }
-        } catch (IOException e) {
-            // TODO Show a useful notification in this case, too
-            return;
-        }
+        fs.runBlob(dev, mNewNet.formatAddress(), uid);
 
         String addr = mNewNet.formatAddress();
         TextView macField = (TextView)

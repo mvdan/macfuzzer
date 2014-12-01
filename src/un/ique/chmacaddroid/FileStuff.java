@@ -29,6 +29,8 @@ import java.io.FileOutputStream;
 import android.content.Context;
 import java.io.IOException;
 import java.io.FileNotFoundException;
+import java.lang.Process;
+import java.lang.ProcessBuilder;
 
 public class FileStuff
 {
@@ -76,5 +78,24 @@ public class FileStuff
         if (!dir.isDirectory())
             return null;
         return new File(dir, binaryName);
+    }
+
+    public int runBlob(String dev, String addr, String uid) {
+        int err = 11;
+        try {
+            String[] args = {"su", "0",
+                             getPathToFile().getAbsolutePath(),
+                             dev, addr, uid};
+            Process root_shell = Runtime.getRuntime().exec(args);
+            try {
+                 root_shell.waitFor();
+                 err = root_shell.exitValue();
+            } catch (InterruptedException e) {
+            }
+        } catch (IOException e) {
+            // TODO Show a useful notification in this case, too
+            return -1;
+        }
+        return err;
     }
 }
