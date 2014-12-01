@@ -237,7 +237,7 @@ get_group_id(const char *grpname, gid_t *gid)
             fprintf(stderr, "No group found with group %s\n", grpname);
         } else {
             fprintf(stderr, "getgrnam_r lookup failed for group %s: "
-                            "%s\n", groupname, strerror(s));
+                            "%s\n", grpname, strerror(s));
         }
         return -1;
     }
@@ -427,12 +427,22 @@ finish_what_we_started(int argc, const char * argv[])
     uint8_t mac[mac_byte_length];
     int i;
 
-    if (argc != 4) {
-        return -1;
-    }
     if (argc == 2) {
         return accept_from_stdin(argv[1]);
     }
+    if (argc != 4) {
+        return -1;
+    }
+
+    uid_t uid = get_uid(argv[3]);
+    if (uid < 1) {
+        return -1;
+    }
+
+    if (switch_user(uid)) {
+        return -1;
+    }
+
     iface = argv[1];
 
     fprintf(stderr, "Dev: %s. Beginning address format "
@@ -449,13 +459,6 @@ finish_what_we_started(int argc, const char * argv[])
         return -1;
     }
     fprintf(stderr, "Conversion from hex to byte passed.\n");
-    uid_t uid = get_uid(argv[3]);
-    if (uid < 1) {
-        return -1;
-    }
-    if (switch_user(uid)) {
-        return -1;
-    }
 
     if (confirm_caps_dropped()) {
         return -1;
