@@ -97,11 +97,10 @@ public class RandomMac extends Activity {
             } catch (InterruptedException e) {
             }
         } catch (IOException e) {
-            //return;
+            // TODO Show a useful notification in this case, too
+            return;
         }
-        /*int err = ctller.setMacAddr(mNewNet.getAddress());
-        String errorcode = ctller.getErrorString(err);*/
-        mNewNet.setAddress(ctller.getCurrentMacAddr());
+
         String addr = mNewNet.formatAddress();
         TextView macField = (TextView)
             findViewById(R.id.randommac_macaddress);
