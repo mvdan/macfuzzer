@@ -28,12 +28,20 @@
 #include <sys/types.h>
 #include <pwd.h>
 #include <grp.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <sys/mman.h>
+#include <sys/mount.h>
+
 /* Copied from bionic source repo because ndk is lacking
  * some important constants. */
 /* commit 1f5706c7eb8aacb76fdfa3ef03944be229510b66 */
 #include "capability.h"
 #include "securebits.h"
 #include "prctl.h"
+
+#define _GNU_SOURCE
+#include <sched.h>
 
 /* The android-20 ndk doesn't support these by default */
 #ifndef PR_CAPBSET_READ
@@ -45,6 +53,22 @@
 #ifndef PR_SET_NO_NEW_PRIVS
 #define PR_SET_NO_NEW_PRIVS 38
 #endif
+#ifndef CLONE_NEWIPC
+# define CLONE_NEWIPC	0x08000000	/* New ipcs.  */
+#endif
+#ifndef CLONE_NEWNS
+# define CLONE_NEWNS   0x00020000 /* Set to create new namespace.  */
+#endif
+#ifndef CLONE_NEWPID
+# define CLONE_NEWPID	0x20000000	/* New pid namespace.  */
+#endif
+#ifndef CLONE_NEWUTS
+# define CLONE_NEWUTS	0x04000000	/* New utsname group.  */
+#endif
+#ifndef CLONE_UNTRACED
+# define CLONE_UNTRACED 0x00800000 /* Set if the tracing process can't
+				      force CLONE_PTRACE on this clone.  */
+#endif
 
 int nativeioc_set_mac_addr(const char * iface, const char * mac);
 static int confirm_caps_dropped(void);
@@ -53,6 +77,12 @@ static int finish_what_we_started(int argc, const char * argv[]);
 
 const uint8_t mac_hex_length = 17;
 const uint8_t mac_byte_length = 6;
+
+typedef struct clone_args {
+    int argc;
+    char **argv;
+    int flags;
+} clone_args;
 
 static int
 verify_string_format(const char * str_mac)
@@ -140,6 +170,10 @@ drop_unneeded_caps(void)
     data.effective = 1 << CAP_NET_ADMIN;
     data.effective += 1 << CAP_SETGID;
     data.effective += 1 << CAP_SETUID;
+    /* Sadly we need to keep this in case the kernel supports
+     * namespaces. It's risky, but the result is worth it, if we're
+     * successful. */
+    data.effective += 1 << CAP_SYS_ADMIN;
     data.permitted = data.effective;
     data.inheritable = 0;
     if (capset(&hdr, (const cap_user_data_t)&data)) {
@@ -194,19 +228,94 @@ lock_it_down(void)
 }
 
 static int
+clone_me(void *args)
+{
+    clone_args *ca = (clone_args *)args;
+    int argc = ca->argc;
+    const char **argv = (const char **)ca->argv;
+    /* TODO find a way to test this */
+    if (ca->flags & CLONE_NEWNS) {
+        umount("/proc");
+        umount("/sys");
+        umount("/dev/pts");
+        umount("/dev");
+        umount("/data");
+        umount("/cache");
+        umount("/persist");
+        umount("/system");
+    }
+    return finish_what_we_started(argc, argv);
+}
+
+static int find_valid_clone(int (*fn)(void *), void *child_stack,
+                            int flags, clone_args *arg)
+{
+    int pid, i;
+    int fcombos[] =
+        {0, CLONE_NEWIPC, CLONE_NEWNS, CLONE_NEWPID, CLONE_NEWUTS,
+         CLONE_NEWIPC|CLONE_NEWNS, CLONE_NEWIPC|CLONE_NEWPID,
+         CLONE_NEWIPC|CLONE_NEWUTS,
+         CLONE_NEWNS|CLONE_NEWPID, CLONE_NEWNS|CLONE_NEWUTS,
+         CLONE_NEWPID|CLONE_NEWUTS,
+         CLONE_NEWIPC|CLONE_NEWNS|CLONE_NEWPID,
+         CLONE_NEWIPC|CLONE_NEWPID|CLONE_NEWUTS,
+         CLONE_NEWIPC|CLONE_NEWNS|CLONE_NEWUTS,
+         CLONE_NEWNS|CLONE_NEWPID|CLONE_NEWUTS,
+         CLONE_NEWIPC|CLONE_NEWNS|CLONE_NEWPID|CLONE_NEWUTS};
+    for (i = 0; i < sizeof(fcombos); i++) {
+        arg->flags = flags & ~fcombos[i];
+        pid = clone(fn, child_stack, flags & ~fcombos[i], (void *)arg);
+        if (pid > 0 && errno != EINVAL)
+            return pid;
+    }
+    return -1;
+}
+
+static int
 make_it_so(int argc, const char * argv[])
 {
-    int pid = fork();
+    clone_args *ca;
+    void *new_stack;
+    const int stack_size = sysconf(_SC_PAGESIZE);
+    int flags, i, pid;
+
+    ca = (clone_args *)malloc(sizeof(clone_args));
+    new_stack = mmap(NULL, stack_size, PROT_READ | PROT_WRITE,
+                     MAP_PRIVATE | MAP_ANONYMOUS | MAP_GROWSDOWN |
+                     MAP_STACK, -1, 0);
+
+    if (new_stack == MAP_FAILED) {
+        return -1;
+    }
+    memset(ca, 0, sizeof(clone_args));
+
+    ca->argc = argc;
+    ca->argv = malloc(argc*sizeof(char *));
+    for (i = 0; i < argc; ++i) {
+        ca->argv[i] = strdup(argv[i]);
+    }
+
+    flags = 0;
+    flags |= CLONE_NEWIPC;
+    flags |= CLONE_NEWNS;
+    flags |= CLONE_NEWPID;
+    flags |= CLONE_NEWUTS;
+    flags |= CLONE_UNTRACED;
+
+    fprintf(stderr, "Clone it\n");
+    pid = find_valid_clone(&clone_me, new_stack + stack_size, flags, ca);
     if (pid > 0) {
-        int status;
-        int ret = wait(&status);
-        return ret || status;
-    } else if (pid == 0) {
-        return finish_what_we_started(argc, argv);
+        fprintf(stderr, "Cloned pid %d\n", pid);
+        int status, exitcode;
+        int ret = waitpid(pid, &status, 0);
+        if (ret == pid)
+            if (WIFEXITED(status))
+                return WEXITSTATUS(status);
+        return -1;
     } else {
         fprintf(stderr, "Failed to fork after dropping caps: %s\n",
                         strerror(errno));
-        return pid;
+        return -1;
     }
 }
 
