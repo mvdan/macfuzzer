@@ -33,59 +33,24 @@
 #include <sys/mman.h>
 #include <sys/mount.h>
 
-/* Copied from bionic source repo because ndk is lacking
- * some important constants. */
-/* commit 1f5706c7eb8aacb76fdfa3ef03944be229510b66 */
-#include "capability.h"
-#include "securebits.h"
-#include "prctl.h"
+#include "native_ioctller.h"
+#include "chmacaddr.h"
+#include "externals.h"
 
 #define _GNU_SOURCE
 #include <sched.h>
 
-/* The android-20 ndk doesn't support these by default */
-#ifndef PR_CAPBSET_READ
-#define PR_CAPBSET_READ 23
-#endif
-#ifndef PR_CAPBSET_DROP
-#define PR_CAPBSET_DROP 24
-#endif
-#ifndef PR_SET_NO_NEW_PRIVS
-#define PR_SET_NO_NEW_PRIVS 38
-#endif
-#ifndef CLONE_NEWIPC
-# define CLONE_NEWIPC	0x08000000	/* New ipcs.  */
-#endif
-#ifndef CLONE_NEWNS
-# define CLONE_NEWNS   0x00020000 /* Set to create new namespace.  */
-#endif
-#ifndef CLONE_NEWPID
-# define CLONE_NEWPID	0x20000000	/* New pid namespace.  */
-#endif
-#ifndef CLONE_NEWUTS
-# define CLONE_NEWUTS	0x04000000	/* New utsname group.  */
-#endif
-#ifndef CLONE_UNTRACED
-# define CLONE_UNTRACED 0x00800000 /* Set if the tracing process can't
-				      force CLONE_PTRACE on this clone.  */
-#endif
-
-int nativeioc_set_mac_addr(const char * iface, const char * mac);
-static int confirm_caps_dropped(void);
-static int can_drop_caps(void);
-static int finish_what_we_started(int argc, const char * argv[]);
-
 const uint8_t mac_hex_length = 17;
 const uint8_t mac_byte_length = 6;
 
-typedef struct clone_args {
+struct clone_args {
     int argc;
     char **argv;
     int flags;
-} clone_args;
+};
 
-static int
-verify_string_format(const char * str_mac)
+int
+chmaddr_verify_string_format(const char * str_mac)
 {
     int i = 0;
     if (strlen(str_mac) != mac_hex_length) {
@@ -101,8 +66,8 @@ verify_string_format(const char * str_mac)
     return 0;
 }
 
-static int
-convert_hex_to_byte(const char * strmac, uint8_t * mac)
+int
+chmaddr_convert_hex_to_byte(const char * strmac, uint8_t * mac)
 {
     int i = 0, octet = 0;
     char hex[3];
@@ -130,8 +95,8 @@ convert_hex_to_byte(const char * strmac, uint8_t * mac)
     return 0;
 }
 
-static uid_t
-get_uid(const char * id)
+uid_t
+chmaddr_get_uid(const char * id)
 {
     return (uid_t) strtoul(id, NULL, 10);
 }
@@ -142,14 +107,14 @@ accept_from_stdin(const char * iface)
     return 0;
 }
 
-static int
-can_drop_caps(void)
+int
+chmaddr_can_drop_caps(void)
 {
    return !prctl(PR_CAPBSET_READ, CAP_SYS_ADMIN, 0, 0, 0);
 }
 
-static int
-drop_unneeded_caps(void)
+int
+chmaddr_drop_unneeded_caps(void)
 {
     int i;
     struct __user_cap_header_struct hdr;
@@ -195,8 +160,8 @@ drop_unneeded_caps(void)
     return 0;
 }
 
-static int
-lock_it_down(void)
+int
+chmaddr_lock_it_down(void)
 {
     if (prctl(PR_SET_KEEPCAPS, 1L, 0, 0, 0)) {
         fprintf(stderr, "Failed to set KEEPCAPS. We don't keep "
@@ -227,8 +192,8 @@ lock_it_down(void)
     return 0;
 }
 
-static int
-clone_me(void *args)
+int
+chmaddr_clone_me(void *args)
 {
     clone_args *ca = (clone_args *)args;
     int argc = ca->argc;
@@ -244,10 +209,11 @@ clone_me(void *args)
         umount("/persist");
         umount("/system");
     }
-    return finish_what_we_started(argc, argv);
+    return chmaddr_finish_what_we_started(argc, argv);
 }
 
-static int find_valid_clone(int (*fn)(void *), void *child_stack,
+int
+chmaddr_find_valid_clone(int (*fn)(void *), void *child_stack,
                             int flags, clone_args *arg)
 {
     int pid, i;
@@ -271,8 +237,8 @@ static int find_valid_clone(int (*fn)(void *), void *child_stack,
     return -1;
 }
 
-static int
-make_it_so(int argc, const char * argv[])
+int
+chmaddr_make_it_so(int argc, const char * argv[])
 {
     clone_args *ca;
     void *new_stack;
@@ -303,7 +269,7 @@ make_it_so(int argc, const char * argv[])
     flags |= CLONE_UNTRACED;
 
     fprintf(stderr, "Clone it\n");
-    pid = find_valid_clone(&clone_me, new_stack + stack_size, flags, ca);
+    pid = chmaddr_find_valid_clone(&chmaddr_clone_me, new_stack + stack_size, flags, ca);
     if (pid > 0) {
         fprintf(stderr, "Cloned pid %d\n", pid);
         int status, exitcode;
@@ -320,8 +286,8 @@ make_it_so(int argc, const char * argv[])
 }
 
 #if 0 /* Bionic doesn't implement getgrnam_r() nor getpwuid_r()! */
-static int
-get_group_id(const char *grpname, gid_t *gid)
+int
+chmaddr_get_group_id(const char *grpname, gid_t *gid)
 {
     struct group grp;
     struct group *result;
@@ -357,8 +323,8 @@ get_group_id(const char *grpname, gid_t *gid)
     return 0;
 }
 
-static const gid_t*
-get_users_groups(uid_t uid)
+const gid_t*
+chmaddr_get_users_groups(uid_t uid)
 {
     const char *inet_group = "inet";
     gid_t gid, *gids;
@@ -368,7 +334,7 @@ get_users_groups(uid_t uid)
     size_t bufsize;
     int s;
 
-    if (get_group_id(inet_group, &gid)) {
+    if (chmaddr_get_group_id(inet_group, &gid)) {
         fprintf(stderr, "Failed to retrieve username lookup.\n");
         return NULL;
     }
@@ -403,8 +369,8 @@ get_users_groups(uid_t uid)
     return gids;
 }
 #else
-static int
-get_group_id(const char *grpname, gid_t *gid)
+int
+chmaddr_get_group_id(const char *grpname, gid_t *gid)
 {
     struct group *grp;
 
@@ -424,14 +390,14 @@ get_group_id(const char *grpname, gid_t *gid)
     return 0;
 }
 
-static const gid_t*
-get_users_groups(uid_t uid)
+const gid_t*
+chmaddr_get_users_groups(uid_t uid)
 {
     const char *inet_group = "inet";
     gid_t gid, *gids;
     struct passwd *pwd;
 
-    if (get_group_id(inet_group, &gid)) {
+    if (chmaddr_get_group_id(inet_group, &gid)) {
         fprintf(stderr, "Failed to retrieve username lookup.\n");
         return NULL;
     }
@@ -455,8 +421,8 @@ get_users_groups(uid_t uid)
 }
 #endif
 
-static int
-switch_user(uid_t uid)
+int
+chmaddr_switch_user(uid_t uid)
 {
     const gid_t *groups;
     struct passwd *pwd;
@@ -487,7 +453,7 @@ switch_user(uid_t uid)
         return -1;
     }
 
-    groups = get_users_groups(uid);
+    groups = chmaddr_get_users_groups(uid);
     if (groups == NULL) {
         fprintf(stderr, "Failed to retrieve user's groups.\n");
         return -1;
@@ -529,8 +495,8 @@ switch_user(uid_t uid)
     return 0;
 }
 
-static int
-finish_what_we_started(int argc, const char * argv[])
+int
+chmaddr_finish_what_we_started(int argc, const char * argv[])
 {
     const char * iface;
     uint8_t mac[mac_byte_length];
@@ -543,12 +509,12 @@ finish_what_we_started(int argc, const char * argv[])
         return -1;
     }
 
-    uid_t uid = get_uid(argv[3]);
+    uid_t uid = chmaddr_get_uid(argv[3]);
     if (uid < 1) {
         return -1;
     }
 
-    if (switch_user(uid)) {
+    if (chmaddr_switch_user(uid)) {
         return -1;
     }
 
@@ -556,20 +522,20 @@ finish_what_we_started(int argc, const char * argv[])
 
     fprintf(stderr, "Dev: %s. Beginning address format "
                     "verification.\n", iface);
-    if (verify_string_format(argv[2])) {
+    if (chmaddr_verify_string_format(argv[2])) {
         fprintf(stderr, "Address format failed: %s, %zd.\n", argv[2],
                         strlen(argv[2]));
         return -1;
     }
     fprintf(stderr, "Address format passed.\n");
 
-    if (convert_hex_to_byte(argv[2], mac)) {
+    if (chmaddr_convert_hex_to_byte(argv[2], mac)) {
         fprintf(stderr, "Conversion from hex to byte failed.\n");
         return -1;
     }
     fprintf(stderr, "Conversion from hex to byte passed.\n");
 
-    if (confirm_caps_dropped()) {
+    if (chmaddr_confirm_caps_dropped()) {
         return -1;
     }
 
@@ -587,8 +553,8 @@ finish_what_we_started(int argc, const char * argv[])
 }
 
 #define CHROOT_DIR "/mnt"
-static int
-confirm_caps_dropped(void)
+int
+chmaddr_confirm_caps_dropped(void)
 {
     /*if (prctl(PR_CAPBSET_DROP, CAP_SYS_CHROOT, 0, 0, 0) == 0) {
         fprintf(stderr, "We successfully dropped cap CAP_SYS_CHROOT "
@@ -616,20 +582,20 @@ confirm_caps_dropped(void)
 int
 main(int argc, char * argv[])
 {
-    if (can_drop_caps()) {
+    if (chmaddr_can_drop_caps()) {
         fprintf(stderr, "PR_CAPBSET_DROP not available. grrrr! %s\n",
                         strerror(errno));
         return -1;
     }
 
-    if (lock_it_down()) {
+    if (chmaddr_lock_it_down()) {
         return -1;
     }
 
-    if (drop_unneeded_caps()) {
+    if (chmaddr_drop_unneeded_caps()) {
         return -1;
     }
 
-    return make_it_so(argc, (const char **)argv);
+    return chmaddr_make_it_so(argc, (const char **)argv);
 }
 

@@ -31,6 +31,8 @@
 #include <sys/types.h>
 #include <errno.h>
 
+#include "native_ioctller.h"
+
 jbyteArray
 Java_un_ique_chmacaddroid_NativeIOCtller_getCurrentMacAddr(JNIEnv* env,
                                                            jobject thiz)
