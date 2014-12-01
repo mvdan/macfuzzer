@@ -84,6 +84,7 @@ public class RandomMac extends Activity {
         }
         fs.runBlob(dev, mNewNet.formatAddress(), uid);
 
+        mNewNet.setAddress(ctller.getCurrentMacAddr());
         String addr = mNewNet.formatAddress();
         TextView macField = (TextView)
             findViewById(R.id.randommac_macaddress);
