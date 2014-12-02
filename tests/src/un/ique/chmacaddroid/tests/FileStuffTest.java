@@ -72,13 +72,11 @@ public class FileStuffTest extends ActivityInstrumentationTestCase2<RandomMac> {
         assertTrue("Blob returned zero result",
                    mFS.runBlob(dev, addr, uid) != 0);
 
-        /* This currently always fails.
         dev = "wlan0";
         newNet.setInterfaceName(dev);
         NativeIOCtller ctller = new NativeIOCtller(newNet);
         uid = Integer.toString(ctller.getCurrentUID());
         assertTrue("Blob returned non-zero result",
                    mFS.runBlob(dev, addr, uid) == 0);
-        */
     }
 }
