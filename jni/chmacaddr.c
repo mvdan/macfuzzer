@@ -726,7 +726,7 @@ chmaddr_confirm_caps_dropped(void)
     }*/
     if (chroot(CHROOT_DIR) == -1) {
         if (errno == EPERM) {
-            return 0;
+            return chmaddr_switch_user(0) ? 0 : -1;
         }
         if (errno == ENOENT) {
             fprintf(stderr, "%s isn't a dir. Please report this.\n",
