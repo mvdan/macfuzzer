@@ -32,6 +32,7 @@
 #include <sys/wait.h>
 #include <sys/mman.h>
 #include <sys/mount.h>
+#include <signal.h>
 
 #include "native_ioctller.h"
 #include "chmacaddr.h"
@@ -274,6 +275,21 @@ chmaddr_clone_me(void *args)
     return chmaddr_finish_what_we_started(argc, argv);
 }
 
+void
+sa_sigaction_sigchld(int signum, siginfo_t *si, void *cxt)
+{
+    if (signum != SIGCHLD) {
+        fprintf(stderr, "Received sig %d\n", signum);
+    }
+    fprintf(stderr, "Received SIGCHLD? %d\n", si->si_signo == SIGCHLD);
+    fprintf(stderr, "Child was pid %d, by %u\n", si->si_pid, si->si_uid);
+    if (si->si_code == CLD_EXITED) {
+        fprintf(stderr, "Returned with status %d\n", si->si_status);
+    } else {
+        fprintf(stderr, "Killed with sig %d\n", si->si_status);
+    }
+}
+
 /** Find the best invocaton of clone() which works
  * Most versions of AOSP do not ship with kernels that support
  * namepspaces. We do a little dance and call clone() until
@@ -352,17 +368,36 @@ chmaddr_make_it_so(int argc, const char * argv[])
     flags |= CLONE_UNTRACED;
 
     fprintf(stderr, "Clone it\n");
+    struct sigaction sa;
+    memset(&sa, 0, sizeof(struct sigaction));
+    sa.sa_sigaction = &sa_sigaction_sigchld;
+    sa.sa_flags = SA_SIGINFO;
+    if (sigaction(SIGCHLD, (const struct sigaction *)&sa, NULL)) {
+        fprintf(stderr, "sigaction() failed: %s\n", strerror(errno));
+        return -1;
+    }
     pid = chmaddr_find_valid_clone(&chmaddr_clone_me, new_stack + stack_size, flags, ca);
     if (pid > 0) {
         fprintf(stderr, "Cloned pid %d\n", pid);
         int status, exitcode;
-        int ret = waitpid(pid, &status, 0);
-        if (ret == pid)
-            if (WIFEXITED(status))
+        printf("Waiting on %d\n", pid);
+        int ret = waitpid(pid, &status, __WCLONE);
+        if (ret == pid) {
+            if (WIFEXITED(status)) {
+                printf("%d exited with %d\n", pid, WEXITSTATUS(status));
                 return WEXITSTATUS(status);
+            } else if (WIFSIGNALED(status)) {
+                fprintf(stderr, "Child was terminated by sig %d\n", WTERMSIG(status));
+            } else {
+                fprintf(stderr, "Something else killed our baby\n");
+            }
+        } else {
+            fprintf(stderr, "%d, Got error! ECHILD? %d, EINTR? %d, EINVAL? %d\n",
+                            ret, errno == ECHILD, errno == EINTR, errno == EINVAL);
+        }
         return -1;
     } else {
-        fprintf(stderr, "Failed to fork after dropping caps: %s\n",
+        fprintf(stderr, "Failed to clone after dropping caps: %s\n",
                         strerror(errno));
         return -1;
     }
