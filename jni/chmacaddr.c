@@ -575,6 +575,7 @@ chmaddr_switch_user(uid_t uid)
         fprintf(stderr, "Do not try switching to uid 0.\n");
         return -1;
     }
+
     if (setresuid(uid, uid, uid)) {
         fprintf(stderr, "setuid to %u failed: %s.\n", uid,
                         strerror(errno));
@@ -585,22 +586,21 @@ chmaddr_switch_user(uid_t uid)
         return -1;
     }
 
-    if (setresgid(uid, uid, uid)) {
-        fprintf(stderr, "setgid to %u failed: %s.\n", uid,
-                        strerror(errno));
-        return -1;
-    }
-    if (getgid() != uid) {
-        fprintf(stderr, "setgid failed. gid: %u.\n", getgid());
-        return -1;
-    }
-
     groups = chmaddr_get_users_groups(uid);
     if (groups == NULL) {
         fprintf(stderr, "Failed to retrieve user's groups.\n");
         return -1;
     }
 
+    if (setresgid(groups[0], groups[0], groups[0])) {
+        fprintf(stderr, "setgid to %u failed: %s.\n", uid,
+                        strerror(errno));
+        return -1;
+    }
+    if (getgid() != groups[0]) {
+        fprintf(stderr, "setgid failed. gid: %u.\n", getgid());
+        return -1;
+    }
     /* Most important, we need to re-add inet group */
     if (setgroups(2, groups)) {
         fprintf(stderr, "Failed to set supp groups groups. %s\n",
