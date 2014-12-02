@@ -101,25 +101,31 @@ Java_un_ique_chmacaddroid_NativeIOCtller_getCurrentMacAddrError(JNIEnv* env,
     return (*env)->NewStringUTF(env, "All good!");
 }
 
-int nativeioc_set_mac_addr(const char * iface, const uint8_t * mac) {
+/** Set the MAC address *mac* of network interface *iface*.
+  * Return -1 if we fail while opening an inet datagram socket.
+  * Return -2 if we fail while getting or setting the interface's MAC
+  *    address.
+  * Return 0 on success.
+  */
+int nativeioc_set_mac_addr(const char *iface, const uint8_t *mac) {
     struct ifreq dev;
     int i;
     strncpy(dev.ifr_name, iface, 6);
 
-    int sock = socket (AF_INET, SOCK_DGRAM, 0);
+    int sock = socket(AF_INET, SOCK_DGRAM, 0);
     if (sock < 0) {
-        return errno;
+        return -1;
     }
     if (ioctl(sock, SIOCGIFHWADDR, &dev) < 0) {
         close(sock);
-        return errno;
+        return -2;
     }
     for (i=0; i<6; i++) {
         dev.ifr_hwaddr.sa_data[i] = mac[i];
     }
     if (ioctl(sock, SIOCSIFHWADDR, &dev) < 0) {
         close(sock);
-        return -errno;
+        return -2;
     }
 
     close(sock);

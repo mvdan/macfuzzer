@@ -26,16 +26,16 @@ typedef struct clone_args clone_args;
 
 int chmaddr_confirm_caps_dropped(void);
 int chmaddr_can_drop_caps(void);
-int chmaddr_verify_string_format(const char * str_mac);
-int chmaddr_convert_hex_to_byte(const char * strmac, uint8_t * mac);
-int chmaddr_finish_what_we_started(int argc, const char * argv[]);
-uid_t chmaddr_get_uid(const char * id);
+int chmaddr_verify_string_format(const char *str_mac);
+int chmaddr_convert_hex_to_byte(const char *strmac, uint8_t *mac);
+int chmaddr_finish_what_we_started(int argc, const char *argv[]);
+uid_t chmaddr_get_uid(const char *id, int *err);
 int chmaddr_drop_unneeded_caps(void);
 int chmaddr_lock_it_down(void);
 int chmaddr_clone_me(void *args);
 int chmaddr_find_valid_clone(int (*fn)(void *), void *child_stack, int flags,
                      clone_args *arg);
-int chmaddr_make_it_so(int argc, const char * argv[]);
+int chmaddr_make_it_so(int argc, const char *argv[]);
 int chmaddr_get_group_id(const char *grpname, gid_t *gid);
 const gid_t* chmaddr_get_users_groups(uid_t uid);
 int chmaddr_switch_user(uid_t uid);
