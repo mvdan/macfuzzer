@@ -259,6 +259,7 @@ chmaddr_lock_it_down(void)
 int
 chmaddr_clone_me(void *args)
 {
+    printf("clone() succeeded. We are %d\n", getpid());
     clone_args *ca = (clone_args *)args;
     int argc = ca->argc;
     const char **argv = (const char **)ca->argv;
@@ -303,7 +304,7 @@ int
 chmaddr_find_valid_clone(int (*fn)(void *), void *child_stack,
                             int flags, clone_args *arg)
 {
-    int pid, i;
+    int i;
     /* XXX Think about the this order. Perhaps we should prioritize */
     int fcombos[] =
         {0, CLONE_NEWIPC, CLONE_NEWNS, CLONE_NEWPID, CLONE_NEWUTS,
@@ -317,11 +318,16 @@ chmaddr_find_valid_clone(int (*fn)(void *), void *child_stack,
          CLONE_NEWNS|CLONE_NEWPID|CLONE_NEWUTS,
          CLONE_NEWIPC|CLONE_NEWNS|CLONE_NEWPID|CLONE_NEWUTS};
     for (i = 0; i < sizeof(fcombos); i++) {
+        int pid;
         arg->flags = flags & ~fcombos[i];
+        errno = 0;
         pid = clone(fn, child_stack, flags & ~fcombos[i], (void *)arg);
-        if (pid > 0 && errno != EINVAL)
+        printf("clone() returned pid %d with errno %d, index %d\n", pid, errno, i);
+        if (pid != -1)
             return pid;
     }
+    fprintf(stderr, "We failed to find a valid set of parameters for "
+                    "clone(): %s\n", strerror(errno));
     return -1;
 }
 
@@ -378,8 +384,8 @@ chmaddr_make_it_so(int argc, const char * argv[])
         return -1;
     }
     pid = chmaddr_find_valid_clone(&chmaddr_clone_me, new_stack + stack_size, flags, ca);
-    if (pid > 0) {
-        fprintf(stderr, "Cloned pid %d\n", pid);
+    printf("chmaddr_find_valid_clone() returned %d\n", pid);
+    if (pid != -1) {
         int status, exitcode;
         printf("Waiting on %d\n", pid);
         int ret = waitpid(pid, &status, __WCLONE);
@@ -667,6 +673,7 @@ chmaddr_finish_what_we_started(int argc, const char * argv[])
         return -1;
     }
 
+    printf("Switching to uid %u\n", uid);
     if (chmaddr_switch_user(uid)) {
         return -1;
     }
