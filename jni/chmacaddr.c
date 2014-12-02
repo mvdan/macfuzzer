@@ -183,6 +183,7 @@ chmaddr_drop_unneeded_caps(void)
     data.effective = 1 << CAP_NET_ADMIN;
     data.effective += 1 << CAP_SETGID;
     data.effective += 1 << CAP_SETUID;
+    data.effective += 1 << CAP_SETPCAP;
     /* Sadly we need to keep this in case the kernel supports
      * namespaces. It's risky, but the result is worth it, if we're
      * successful. */
