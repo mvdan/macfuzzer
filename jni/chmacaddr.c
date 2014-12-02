@@ -168,13 +168,21 @@ chmaddr_drop_unneeded_caps(void)
     struct __user_cap_header_struct hdr;
     struct __user_cap_data_struct data, have_data;
 
-    for (i = 0; prctl(PR_CAPBSET_READ, i, 0, 0, 0) == 1; i++) {
+    /* XXX This is borked. Come back to this. */
+    /*for (i = 0; prctl(PR_CAPBSET_READ, i, 0, 0, 0) == 1; i++) {
+        if (i == CAP_NET_ADMIN ||
+            i == CAP_FSETID ||
+            i == CAP_SETGID ||
+            i == CAP_SETUID ||
+            i == CAP_SETPCAP ||
+            i == CAP_SYS_ADMIN)
+            continue;
         if (prctl(PR_CAPBSET_DROP, i, 0, 0, 0)) {
             fprintf(stderr, "Failed to drop cap: %d, %s\n", i,
                             strerror(errno));
             return -1;
         }
-    }
+    }*/
 
     hdr.version = _LINUX_CAPABILITY_VERSION;
     hdr.pid = 0;
