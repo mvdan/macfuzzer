@@ -216,6 +216,7 @@ chmaddr_drop_unneeded_caps(void)
 int
 chmaddr_lock_it_down(void)
 {
+    /* This is now redundant */
     if (prctl(PR_SET_KEEPCAPS, 1L, 0, 0, 0)) {
         fprintf(stderr, "Failed to set KEEPCAPS. We don't keep "
                         "NET_ADMIN when we switch users. %s\n",
@@ -232,7 +233,8 @@ chmaddr_lock_it_down(void)
     }
     #endif
 
-    if (prctl(PR_SET_SECUREBITS, SECBIT_KEEP_CAPS_LOCKED |
+    if (prctl(PR_SET_SECUREBITS, SECBIT_KEEP_CAPS|
+                                 SECBIT_KEEP_CAPS_LOCKED |
                                  SECBIT_NO_SETUID_FIXUP |
                                  SECBIT_NO_SETUID_FIXUP_LOCKED |
                                  SECBIT_NOROOT |
