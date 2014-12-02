@@ -136,7 +136,14 @@ accept_from_stdin(const char *iface)
 int
 chmaddr_can_drop_caps(void)
 {
-   return !prctl(PR_CAPBSET_READ, CAP_SYS_ADMIN, 0, 0, 0);
+    struct __user_cap_header_struct hdr;
+    struct __user_cap_data_struct have_data;
+    hdr.version = _LINUX_CAPABILITY_VERSION;
+    hdr.pid = getpid();
+    if (capget(&hdr, &have_data)) {
+        return -1;
+    }
+    return !!(have_data.effective & ((1<<CAP_SETPCAP) | (1<<CAP_SYS_ADMIN)));
 }
 
 /** Drop all caps we don't need later
@@ -708,9 +715,10 @@ chmaddr_confirm_caps_dropped(void)
 int
 main(int argc, char * argv[])
 {
-    if (chmaddr_can_drop_caps()) {
-        fprintf(stderr, "PR_CAPBSET_DROP not available. grrrr! %s\n",
-                        strerror(errno));
+    int drop_caps = chmaddr_can_drop_caps();
+    if (drop_caps != 1) {
+        fprintf(stderr, "Neither SYS_ADMIN nor SETPCAP are not "
+                        "available. grrrr! %s\n", strerror(errno));
         return -1;
     }
 
