@@ -11,10 +11,13 @@ install: all
 
 clean:
 	ant clean && cd tests && ant clean
+	rm -rf libs/
 
-test: clean install
-	  cd tests && ant debug && \
-	  adb install -r bin/ChMacAddroidTest-debug.apk && \
+test: clean native
+	  cd tests && ant uninstall && \
+          ant debug && \
+	  install -v ../libs/armeabi/nativetests ../res/raw/
+	cd tests && ant debug install && \
 	  adb logcat -c && \
 	  ant test && \
 	  adb logcat -C

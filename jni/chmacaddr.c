@@ -79,6 +79,7 @@ chmaddr_verify_string_format(const char *str_mac)
  * representation and convert it to byte representation,
  * saving the value in *mac*.
  * Return -1 if the conversion fails due to invalid format.
+ * Return -2 if the string contains non-hex values (excluding ':').
  * Return 0 on success;
  *
  * Note, this function does not perform format validation. Use
@@ -88,7 +89,7 @@ int
 chmaddr_convert_hex_to_byte(const char *strmac, uint8_t *mac)
 {
     int i = 0, octet = 0;
-    char hex[3];
+    char hex[3], *endptr;
     hex[2] = '\0';
     for (i = 0; i < mac_hex_length; i++) {
         long topfour;
@@ -99,7 +100,9 @@ chmaddr_convert_hex_to_byte(const char *strmac, uint8_t *mac)
                             "colon.\n", strmac[i], i);
             return -1;
         }
-        topfour = strtoul(hex, NULL, 16);
+        topfour = strtoul(hex, &endptr, 16);
+        if (*endptr !='\0' || topfour == ULONG_MAX)
+            return -2;
         mac[octet++] = topfour & 0xFF;
     }
 
@@ -115,9 +118,10 @@ chmaddr_convert_hex_to_byte(const char *strmac, uint8_t *mac)
 uid_t
 chmaddr_get_uid(const char *id, int *err)
 {
-    unsigned long uid = strtoul(id, NULL, 10);
+    char *endptr;
+    unsigned long uid = strtoul(id, &endptr, 0);
     /* Assume errno is ERANGE */
-    if (uid == ULONG_MAX)
+    if (*endptr != '\0' || uid == ULONG_MAX)
         *err = 1;
     return (uid_t) uid;
 }
@@ -189,13 +193,13 @@ chmaddr_drop_unneeded_caps(void)
 
     data.effective = 0;
     data.effective = 1 << CAP_NET_ADMIN;
-    data.effective += 1 << CAP_SETGID;
-    data.effective += 1 << CAP_SETUID;
-    data.effective += 1 << CAP_SETPCAP;
+    data.effective |= 1 << CAP_SETGID;
+    data.effective |= 1 << CAP_SETUID;
+    data.effective |= 1 << CAP_SETPCAP;
     /* Sadly we need to keep this in case the kernel supports
      * namespaces. It's risky, but the result is worth it, if we're
      * successful. */
-    data.effective += 1 << CAP_SYS_ADMIN;
+    data.effective |= 1 << CAP_SYS_ADMIN;
     data.permitted = data.effective;
     data.inheritable = 0;
     if (capset(&hdr, (const cap_user_data_t)&data)) {
@@ -285,7 +289,7 @@ chmaddr_clone_me(void *args)
     return chmaddr_finish_what_we_started(argc, argv);
 }
 
-void
+static void
 sa_sigaction_sigchld(int signum, siginfo_t *si, void *cxt)
 {
     if (signum != SIGCHLD) {
@@ -608,7 +612,7 @@ chmaddr_switch_user(uid_t uid)
     }
 
     if (setresgid(groups[0], groups[0], groups[0])) {
-        fprintf(stderr, "setgid to %u failed: %s.\n", uid,
+        fprintf(stderr, "setgid to %u failed: %s.\n", groups[0],
                         strerror(errno));
         return -1;
     }
@@ -667,7 +671,7 @@ chmaddr_finish_what_we_started(int argc, const char * argv[])
 {
     const char * iface;
     uint8_t mac[mac_byte_length];
-    int i, err;
+    int i, err = 0;
 
     if (argc == 2) {
         return accept_from_stdin(argv[1]);

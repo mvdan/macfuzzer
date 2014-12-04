@@ -22,6 +22,12 @@
 #ifndef _CHMACADDROID_CHMACADDR_H
 #define _CHMACADDROID_CHMACADDR_H
 
+#include <sys/types.h>
+#include <unistd.h>
+
+extern const uint8_t mac_hex_length;
+extern const uint8_t mac_byte_length;
+
 typedef struct clone_args clone_args;
 
 int chmaddr_confirm_caps_dropped(void);
