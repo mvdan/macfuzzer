@@ -1,0 +1,3 @@
+[submodule "tests/jni/external/tinytest"]
+	path = tests/jni/external/tinytest
+	url = https://github.com/nmathewson/tinytest.git
