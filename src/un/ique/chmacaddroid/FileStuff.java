@@ -25,12 +25,14 @@ import android.app.Activity;
 import java.io.File;
 import android.content.res.Resources;
 import java.io.InputStream;
+import java.io.BufferedInputStream;
 import java.io.FileOutputStream;
 import android.content.Context;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.lang.Process;
 import java.lang.ProcessBuilder;
+import un.ique.chmacaddroid.ProcessResult;
 
 public class FileStuff
 {
@@ -42,10 +44,18 @@ public class FileStuff
     }
 
     public File copyBinaryFile() {
+        return copyBinaryFile(binaryName, R.raw.chmacaddr);
+    }
+
+    public File copyBinaryFile(String filename, int resource) {
+        if (filename == null) {
+            filename = binaryName;
+        }
+
         try {
             InputStream is =
-                    mCurrAct.getResources().openRawResource(R.raw.chmacaddr);
-            FileOutputStream fos = mCurrAct.openFileOutput(binaryName,
+                    mCurrAct.getResources().openRawResource(resource);
+            FileOutputStream fos = mCurrAct.openFileOutput(filename,
                                                   Context.MODE_PRIVATE);
             int bytesRead = -1, round = 0;
             byte[] byteBuffer = new byte[100];
@@ -64,7 +74,7 @@ public class FileStuff
         } catch ( FileNotFoundException e) {
         } catch ( IOException e) {
         }
-        File cm = getPathToFile();
+        File cm = getPathToFile(filename);
         if (cm != null && cm.exists() && cm.isFile()) {
             cm.setExecutable(true);
         } else {
@@ -73,29 +83,67 @@ public class FileStuff
         return cm;
     }
 
-    public File getPathToFile() {
+    public File getPathToFile(String filename) {
+        if (filename == null) {
+            filename = binaryName;
+        }
+
         File dir = mCurrAct.getFilesDir();
         if (!dir.isDirectory())
             return null;
-        return new File(dir, binaryName);
+        return new File(dir, filename);
     }
 
     public int runBlob(String dev, String addr, String uid) {
-        int err = 11;
+        String[] args = {"su", "0",
+                         getPathToFile(null).getAbsolutePath(),
+                         dev, addr, uid};
+        return runBlob(args, false).getExitCode();
+    }
+
+    public ProcessResult runBlob(String[] args, boolean printOut) {
+        String out = "", err = "";
+        int code = -1, bufsize = 8192;
+        byte buf[] = new byte[bufsize];
         try {
-            String[] args = {"su", "0",
-                             getPathToFile().getAbsolutePath(),
-                             dev, addr, uid};
-            Process root_shell = Runtime.getRuntime().exec(args);
+            Process proc = new ProcessBuilder().
+                               command(args).
+                               redirectErrorStream(true).
+                               start();
+            BufferedInputStream outStream =
+                    new BufferedInputStream(proc.getInputStream(),
+                                            bufsize);
+            BufferedInputStream errStream =
+                    new BufferedInputStream(proc.getErrorStream(),
+                                            bufsize);
             try {
-                 root_shell.waitFor();
-                 err = root_shell.exitValue();
+                int bytesRead = 0;
+                while (true) {
+                    bytesRead = outStream.read(buf, 0, bufsize);
+                    if (bytesRead != -1) {
+                        out += new String(buf, 0, bytesRead);
+                    }
+                    bytesRead = errStream.read(buf, 0, bufsize);
+                    if (bytesRead != -1) {
+                        err += new String(buf, 0, bytesRead);
+                    }
+                    if (bytesRead == -1) {
+                        try {
+                            proc.exitValue();
+                            break;
+                        } catch (IllegalThreadStateException e) {
+                            /* Process is still executing */
+                        }
+                    }
+                }
+                proc.waitFor();
+                code = proc.exitValue();
             } catch (InterruptedException e) {
             }
         } catch (IOException e) {
             // TODO Show a useful notification in this case, too
-            return -1;
+            return new ProcessResult(out, err, code);
         }
-        return err;
+        return new ProcessResult(out, err, code);
     }
 }

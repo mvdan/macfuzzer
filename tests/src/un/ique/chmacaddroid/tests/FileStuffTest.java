@@ -47,7 +47,7 @@ public class FileStuffTest extends ActivityInstrumentationTestCase2<RandomMac> {
     public void setUp() throws Exception {
         RandomMac rs = getActivity();
         mFS = new FileStuff(rs);
-        mBinaryFilePath = mFS.getPathToFile();
+        mBinaryFilePath = mFS.getPathToFile(null);
     }
 
     public void testPreconditions() {
