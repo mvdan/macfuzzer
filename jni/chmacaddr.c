@@ -757,32 +757,3 @@ chmaddr_confirm_caps_dropped(void)
     return -1;
 }
 #undef CHROOT_DIR
-
-/** Kick it off
- * Check if we can drop capabilities, then prevent regaining
- * any capabilities we drop in the future. Last, we drop all
- * capabilities we don't need.
- * Return -1 on failure.
- * Return 0 on success.
- */
-int
-main(int argc, char * argv[])
-{
-    int drop_caps = chmaddr_can_drop_caps();
-    if (drop_caps != 1) {
-        fprintf(stderr, "Neither SYS_ADMIN nor SETPCAP are not "
-                        "available. grrrr! %s\n", strerror(errno));
-        return -1;
-    }
-
-    if (chmaddr_lock_it_down()) {
-        return -1;
-    }
-
-    if (chmaddr_drop_unneeded_caps()) {
-        return -1;
-    }
-
-    return chmaddr_make_it_so(argc, (const char **)argv);
-}
-
