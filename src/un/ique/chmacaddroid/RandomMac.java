@@ -30,6 +30,7 @@ import un.ique.chmacaddroid.UserNotice;
 import android.widget.TextView;
 import android.view.View;
 import android.content.Intent;
+import android.widget.Toast;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.io.File;
@@ -85,18 +86,30 @@ public class RandomMac extends Activity {
         String uid = Integer.toString(ctller.getCurrentUID());
         FileStuff fs = new FileStuff(this);
         File exe = fs.copyBinaryFile();
+        String newAddr = mNewNet.formatAddress();
+        Layer2Address newL2A = new Layer2Address();
+
         /* TOCTOU but this let's us handle the failure easier */
         if (exe == null) {
             mNotice.showSuggestRestartAlert("noFileRestart");
         }
-        fs.runBlob(dev, mNewNet.formatAddress(), uid);
+        fs.runBlob(dev, newAddr, uid);
 
-        mNewNet.setAddress(ctller.getCurrentMacAddr());
-        String addr = mNewNet.formatAddress();
+        newL2A.setAddress(ctller.getCurrentMacAddr());
+        if (newAddr.compareTo(newL2A.formatAddress()) == 0) {
+            mNotice.makeMeChangeStatusToast(R.string.change_success,
+                                            Toast.LENGTH_SHORT);
+        } else {
+            String toast = (String) getString(R.string.change_failed);
+            toast += "\nCurrent: " + newL2A.formatAddress();
+            toast += ", Expected: " + newAddr;
+            mNotice.makeMeChangeStatusToast(toast, Toast.LENGTH_LONG);
+            mNewNet.setAddress(newL2A.getAddress());
+        }
         TextView macField = (TextView)
             findViewById(R.id.randommac_macaddress);
         if (macField != null) {
-            macField.setText(addr);
+            macField.setText(newL2A.formatAddress());
         }
     }
 }

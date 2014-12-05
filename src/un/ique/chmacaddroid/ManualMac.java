@@ -31,6 +31,7 @@ import un.ique.chmacaddroid.UserNotice;
 import android.widget.TextView;
 import android.view.View;
 import android.content.Intent;
+import android.widget.Toast;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.io.File;
@@ -220,10 +221,19 @@ public class ManualMac extends Activity {
         fs.runBlob(dev, addr, uid);
 
         mNewNet.setAddress(ctller.getCurrentMacAddr());
+        if (addr.compareTo(mNewNet.formatAddress()) == 0) {
+            mNotice.makeMeChangeStatusToast(R.string.change_success,
+                                            Toast.LENGTH_SHORT);
+        } else {
+            String toast = (String) getString(R.string.change_failed);
+            toast += "\nCurrent: " + mNewNet.formatAddress();
+            toast += ", Expected: " + addr;
+            mNotice.makeMeChangeStatusToast(toast, Toast.LENGTH_LONG);
+        }
         TextView macField = (TextView)
             findViewById(R.id.manualmac_macaddress);
         if (macField != null) {
-            macField.setText(addr);
+            macField.setText(mNewNet.formatAddress());
         }
     }
 }
