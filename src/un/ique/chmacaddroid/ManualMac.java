@@ -73,7 +73,7 @@ public class ManualMac extends Activity {
         } catch (NumberFormatException e) {
             // TODO Useful user message
         }
-        if (byte1 == "" || byte1.length() != 2) {
+        if (byte1.length() != 2) {
             return "";
         }
 
@@ -89,7 +89,7 @@ public class ManualMac extends Activity {
         } catch (NumberFormatException e) {
             // TODO Useful user message
         }
-        if (byte2 == "" || byte2.length() != 2) {
+        if (byte2.length() != 2) {
             return "";
         }
 
@@ -106,7 +106,7 @@ public class ManualMac extends Activity {
             // TODO Useful user message
            return "";
         }
-        if (byte3 == "" || byte3.length() != 2) {
+        if (byte3.length() != 2) {
             return "";
         }
 
@@ -123,7 +123,7 @@ public class ManualMac extends Activity {
             // TODO Useful user message
            return "";
         }
-        if (byte4 == "" || byte4.length() != 2) {
+        if (byte4.length() != 2) {
             return "";
         }
 
@@ -140,7 +140,7 @@ public class ManualMac extends Activity {
             // TODO Useful user message
            return "";
         }
-        if (byte5 == "" || byte5.length() != 2) {
+        if (byte5.length() != 2) {
             return "";
         }
 
@@ -157,7 +157,7 @@ public class ManualMac extends Activity {
             // TODO Useful user message
            return "";
         }
-        if (byte6 == "" || byte6.length() != 2) {
+        if (byte6.length() != 2) {
             return "";
         }
 
