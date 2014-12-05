@@ -27,6 +27,7 @@ import un.ique.chmacaddroid.Main;
 import un.ique.chmacaddroid.Layer2Address;
 import un.ique.chmacaddroid.NativeIOCtller;
 import un.ique.chmacaddroid.FileStuff;
+import un.ique.chmacaddroid.CMCAlertDialog;
 import android.widget.TextView;
 import android.view.View;
 import android.content.Intent;
@@ -34,21 +35,18 @@ import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.io.File;
 import java.lang.NumberFormatException;
-import android.app.DialogFragment;
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.DialogInterface;
-import android.app.FragmentManager;
 
 public class ManualMac extends Activity {
     // Let's hardcode wlan0, for now
     private String dev = "wlan0";
     private Layer2Address mNewNet;
+    private CMCAlertDialog mAlert;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.manualmac);
+        mAlert = new CMCAlertDialog(this);
 
         Layer2Address newNet = new Layer2Address();
         newNet.setInterfaceName(dev);
@@ -71,18 +69,18 @@ public class ManualMac extends Activity {
         if (macField != null) {
             byte1 = macField.getText().toString();
         } else {
-            showSuggestRestartAlert("byte1NoField");
+            mAlert.showSuggestRestartAlert("byte1NoField");
             return "";
         }
         try {
             Integer.parseInt(byte1, 16);
         } catch (NumberFormatException e) {
-            showInvalidEntryAlert(R.string.manualmac_notice_not_hex_1,
+            mAlert.showInvalidEntryAlert(R.string.manualmac_notice_not_hex_1,
                                   "byte1NotHex");
             return "";
         }
         if (byte1.length() != 2) {
-            showInvalidEntryAlert(R.string.manualmac_notice_2_chars_1,
+            mAlert.showInvalidEntryAlert(R.string.manualmac_notice_2_chars_1,
                                   "byte1Not2");
             return "";
         }
@@ -92,18 +90,18 @@ public class ManualMac extends Activity {
         if (macField != null) {
             byte2 = macField.getText().toString();
         } else {
-            showSuggestRestartAlert("byte2NoField");
+            mAlert.showSuggestRestartAlert("byte2NoField");
             return "";
         }
         try {
             Integer.parseInt(byte1, 16);
         } catch (NumberFormatException e) {
-            showInvalidEntryAlert(R.string.manualmac_notice_not_hex_2,
+            mAlert.showInvalidEntryAlert(R.string.manualmac_notice_not_hex_2,
                                   "byte2NotHex");
             return "";
         }
         if (byte2.length() != 2) {
-            showInvalidEntryAlert(R.string.manualmac_notice_2_chars_2,
+            mAlert.showInvalidEntryAlert(R.string.manualmac_notice_2_chars_2,
                                   "byte2Not2");
             return "";
         }
@@ -113,18 +111,18 @@ public class ManualMac extends Activity {
         if (macField != null) {
             byte3 = macField.getText().toString();
         } else {
-            showSuggestRestartAlert("byte3NoField");
+            mAlert.showSuggestRestartAlert("byte3NoField");
             return "";
         }
         try {
             Integer.parseInt(byte2, 16);
         } catch (NumberFormatException e) {
-            showInvalidEntryAlert(R.string.manualmac_notice_not_hex_3,
+            mAlert.showInvalidEntryAlert(R.string.manualmac_notice_not_hex_3,
                                   "byte3NotHex");
             return "";
         }
         if (byte3.length() != 2) {
-            showInvalidEntryAlert(R.string.manualmac_notice_2_chars_3,
+            mAlert.showInvalidEntryAlert(R.string.manualmac_notice_2_chars_3,
                                   "byte3Not2");
             return "";
         }
@@ -134,18 +132,18 @@ public class ManualMac extends Activity {
         if (macField != null) {
             byte4 = macField.getText().toString();
         } else {
-            showSuggestRestartAlert("byte4NoField");
+            mAlert.showSuggestRestartAlert("byte4NoField");
             return "";
         }
         try {
             Integer.parseInt(byte3, 16);
         } catch (NumberFormatException e) {
-            showInvalidEntryAlert(R.string.manualmac_notice_not_hex_4,
+            mAlert.showInvalidEntryAlert(R.string.manualmac_notice_not_hex_4,
                                   "byte4NotHex");
             return "";
         }
         if (byte4.length() != 2) {
-            showInvalidEntryAlert(R.string.manualmac_notice_2_chars_4,
+            mAlert.showInvalidEntryAlert(R.string.manualmac_notice_2_chars_4,
                                   "byte4Not2");
             return "";
         }
@@ -155,18 +153,18 @@ public class ManualMac extends Activity {
         if (macField != null) {
             byte5 = macField.getText().toString();
         } else {
-            showSuggestRestartAlert("byte5NoField");
+            mAlert.showSuggestRestartAlert("byte5NoField");
             return "";
         }
         try {
             Integer.parseInt(byte4, 16);
         } catch (NumberFormatException e) {
-            showInvalidEntryAlert(R.string.manualmac_notice_not_hex_5,
+            mAlert.showInvalidEntryAlert(R.string.manualmac_notice_not_hex_5,
                                   "byte5NotHex");
             return "";
         }
         if (byte5.length() != 2) {
-            showInvalidEntryAlert(R.string.manualmac_notice_2_chars_5,
+            mAlert.showInvalidEntryAlert(R.string.manualmac_notice_2_chars_5,
                                   "byte5Not2");
             return "";
         }
@@ -176,18 +174,18 @@ public class ManualMac extends Activity {
         if (macField != null) {
             byte6 = macField.getText().toString();
         } else {
-            showSuggestRestartAlert("byte6NoField");
+            mAlert.showSuggestRestartAlert("byte6NoField");
             return "";
         }
         try {
             Integer.parseInt(byte6, 16);
         } catch (NumberFormatException e) {
-            showInvalidEntryAlert(R.string.manualmac_notice_not_hex_6,
+            mAlert.showInvalidEntryAlert(R.string.manualmac_notice_not_hex_6,
                                   "byte6NotHex");
             return "";
         }
         if (byte6.length() != 2) {
-            showInvalidEntryAlert(R.string.manualmac_notice_2_chars_6,
+            mAlert.showInvalidEntryAlert(R.string.manualmac_notice_2_chars_6,
                                   "byte6Not2");
             return "";
         }
@@ -216,7 +214,7 @@ public class ManualMac extends Activity {
         File exe = fs.copyBinaryFile();
         /* TOCTOU but this let's us handle the failure easier */
         if (exe == null) {
-            showSuggestRestartAlert("noFileRestart");
+            mAlert.showSuggestRestartAlert("noFileRestart");
         }
 
         fs.runBlob(dev, addr, uid);
@@ -226,92 +224,6 @@ public class ManualMac extends Activity {
             findViewById(R.id.manualmac_macaddress);
         if (macField != null) {
             macField.setText(addr);
-        }
-    }
-
-    public void showSuggestRestartAlert(String tag) {
-        launchAndCloseRestartAlert(R.string.notice_restart,
-                                   R.string.notice_restart_title,
-                                   R.string.button_close_app,
-                                   R.string.button_continue,
-                                   "closeapp", "do_nothing",
-                                   tag);
-    }
-
-    public void showInvalidEntryAlert(int messageId, String tag) {
-        launchAndCloseRestartAlert(
-                                messageId,
-                                R.string.manualmac_notice_invalid_title,
-                                R.string.button_okay,
-                                0, "do_nothing", "do_nothing",
-                                tag);
-    }
-
-
-    public void launchAndCloseRestartAlert(int messageId, int titleId,
-                                           int pbutton, int nbutton,
-                                           String cbPos, String cbNeg,
-                                           String tag) {
-        DialogFragment dialog =
-                new AlertNoticeDialogFragment(messageId, titleId,
-                                              pbutton, nbutton,
-                                              cbPos, cbNeg);
-        dialog.show(getFragmentManager(), tag);
-        /*dialog.dismiss();*/
-    }
-
-
-    public void callbackActions(String cb) {
-        if (cb == "closeapp") {
-            setResult(Main.RESULT_EXIT);
-            finish();
-        } else if (cb == "do_nothing") {
-            return;
-        } else {
-            return;
-        }
-    }
-
-    private class AlertNoticeDialogFragment extends DialogFragment {
-        int mId, tId, mPosButton, mNegButton;
-        String callbackPos, callbackNeg;
-
-        public AlertNoticeDialogFragment(int messageId, int titleId,
-                                         int pbutton, int nbutton,
-                                         String cbPos, String cbNeg) {
-            super();
-            mId = messageId;
-            tId = titleId;
-            mPosButton = pbutton;
-            mNegButton = nbutton;
-            callbackPos = cbPos;
-            callbackNeg = cbNeg;
-        }
-
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            AlertDialog.Builder builder =
-                                 new AlertDialog.Builder(getActivity());
-            builder.setMessage(mId).setTitle(tId);
-            if (mNegButton != 0) {
-                builder.setNegativeButton(mNegButton,
-                                 new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog,
-                                        int id) {
-                        callbackActions(callbackNeg);
-                    }
-                });
-            }
-            if (mPosButton != 0) {
-                builder.setPositiveButton(mPosButton,
-                                 new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog,
-                                        int id) {
-                        callbackActions(callbackNeg);
-                    }
-                });
-            }
-            return builder.create();
         }
     }
 }
