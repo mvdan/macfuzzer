@@ -39,6 +39,9 @@
     <string name="notice_restart">We\'ve malfunctioned. If this error continues, please report it.</string>
     <string name="change_failed">MAC Address Change Failed! :(</string>
     <string name="change_success">MAC Address Change Successful! :)</string>
+    <string name="possible_reason">Possible reason:</string>
+    <string name="current">Current</string>
+    <string name="expected">Expected</string>
     <string name="colon"> : </string>
     <string name="blank"></string>
 </resources>

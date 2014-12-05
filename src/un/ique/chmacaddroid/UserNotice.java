@@ -39,7 +39,7 @@ public class UserNotice {
     }
 
     public void showSuggestRestartAlert(String tag) {
-        launchAndCloseRestartAlert(R.string.notice_restart,
+        launchAndCloseAlert(R.string.notice_restart,
                                    R.string.notice_restart_title,
                                    R.string.button_close_app,
                                    R.string.button_continue,
@@ -48,7 +48,7 @@ public class UserNotice {
     }
 
     public void showInvalidEntryAlert(int messageId, String tag) {
-        launchAndCloseRestartAlert(
+        launchAndCloseAlert(
                                 messageId,
                                 R.string.manualmac_notice_invalid_title,
                                 R.string.button_okay,
@@ -56,17 +56,27 @@ public class UserNotice {
                                 tag);
     }
 
-
-    public void launchAndCloseRestartAlert(int messageId, int titleId,
-                                           int pbutton, int nbutton,
-                                           String cbPos, String cbNeg,
-                                           String tag) {
+    public void launchAndCloseAlert(int messageId, int titleId,
+                                    int pbutton, int nbutton,
+                                    String cbPos, String cbNeg,
+                                    String tag) {
         DialogFragment dialog =
                 new AlertNoticeDialogFragment(messageId, titleId,
                                               pbutton, nbutton,
                                               cbPos, cbNeg);
         dialog.show(mAct.getFragmentManager(), tag);
-        /*dialog.dismiss();*/
+    }
+
+    public void launchAndCloseAlert(CharSequence msg,
+                                    CharSequence title,
+                                    int pbutton, int nbutton,
+                                    String cbPos, String cbNeg,
+                                    String tag) {
+        DialogFragment dialog =
+                new AlertNoticeDialogFragment(msg, title,
+                                              pbutton, nbutton,
+                                              cbPos, cbNeg);
+        dialog.show(mAct.getFragmentManager(), tag);
     }
 
 
@@ -84,6 +94,7 @@ public class UserNotice {
     private class AlertNoticeDialogFragment extends DialogFragment {
         int mId, tId, mPosButton, mNegButton;
         String callbackPos, callbackNeg;
+        CharSequence mMsg = null, mTitle = null;
 
         public AlertNoticeDialogFragment(int messageId, int titleId,
                                          int pbutton, int nbutton,
@@ -97,11 +108,35 @@ public class UserNotice {
             callbackNeg = cbNeg;
         }
 
+        public AlertNoticeDialogFragment(CharSequence msg,
+                                         CharSequence title,
+                                         int pbutton, int nbutton,
+                                         String cbPos, String cbNeg) {
+            super();
+            mMsg = msg;
+            mTitle = title;
+            mPosButton = pbutton;
+            mNegButton = nbutton;
+            callbackPos = cbPos;
+            callbackNeg = cbNeg;
+        }
+
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             AlertDialog.Builder builder =
                                  new AlertDialog.Builder(mAct);
-            builder.setMessage(mId).setTitle(tId);
+            if (mMsg == null) {
+                builder.setMessage(mId);
+            } else {
+                builder.setMessage(mMsg);
+            }
+
+            if (mTitle == null) {
+                builder.setTitle(tId);
+            } else {
+                builder.setTitle(mTitle);
+            }
+
             if (mNegButton != 0) {
                 builder.setNegativeButton(mNegButton,
                                  new DialogInterface.OnClickListener() {

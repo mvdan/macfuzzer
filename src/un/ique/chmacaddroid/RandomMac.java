@@ -101,11 +101,19 @@ public class RandomMac extends Activity {
             mNotice.makeMeChangeStatusToast(R.string.change_success,
                                             Toast.LENGTH_SHORT);
         } else {
-            String toast = (String) getString(R.string.change_failed);
-            toast += "\nCurrent: " + newL2A.formatAddress();
-            toast += ", Expected: " + newAddr;
-            mNotice.makeMeChangeStatusToast(toast, Toast.LENGTH_LONG);
-            mNewNet.setAddress(newL2A.getAddress());
+            String msg = getString(R.string.current) + ": ";
+            msg += newL2A.formatAddress() + "\n";
+            msg += getString(R.string.expected) + ": " + newAddr + "\n";
+            if (pr.getStdOut().compareTo("") != 0) {
+                msg += pr.getStdOut() + "\n";
+            }
+            if (pr.getStdErr().compareTo("") != 0) {
+                msg += pr.getStdErr();
+            }
+            mNotice.launchAndCloseAlert(msg,
+                            getString(R.string.change_failed),
+                            R.string.button_okay, 0, "do_nothing",
+                            "do_nothing", "failedChange");
         }
         TextView macField = (TextView)
             findViewById(R.id.randommac_macaddress);

@@ -226,10 +226,20 @@ public class ManualMac extends Activity {
             mNotice.makeMeChangeStatusToast(R.string.change_success,
                                             Toast.LENGTH_SHORT);
         } else {
-            String toast = (String) getString(R.string.change_failed);
-            toast += "\nCurrent: " + mNewNet.formatAddress();
-            toast += ", Expected: " + addr;
-            mNotice.makeMeChangeStatusToast(toast, Toast.LENGTH_LONG);
+            String msg = getString(R.string.current) + ": ";
+            msg += mNewNet.formatAddress() + "\n";
+            msg += getString(R.string.expected) + ": " + addr  + "\n";
+            if (pr.getStdOut().compareTo("") != 0) {
+                msg += pr.getStdOut() + "\n";
+            }
+            if (pr.getStdErr().compareTo("") != 0) {
+                msg += pr.getStdErr();
+            }
+            mNotice.launchAndCloseAlert(msg,
+                            getString(R.string.change_failed),
+                            R.string.button_okay, 0, "do_nothing",
+                            "do_nothing", "failedChange");
+
         }
         TextView macField = (TextView)
             findViewById(R.id.manualmac_macaddress);
