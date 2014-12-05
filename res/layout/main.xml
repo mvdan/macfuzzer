@@ -36,6 +36,7 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:text="@string/main_action_1"
+    android:onClick="callManualMac"
     />
 <TextView
     android:layout_width="wrap_content"

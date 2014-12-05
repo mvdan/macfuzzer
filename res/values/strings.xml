@@ -12,10 +12,13 @@
     <string name="randommac_app_name">Randomize MAC Address</string>
     <string name="randommac_header">Compare the current MAC address and the proposed new MAC address."</string>
     <string name="randommac_randomize">I don\'t like this one. Create another MAC Address</string>
+    <string name="manualmac_app_name">Manually Set MAC Address</string>
+    <string name="manualmac_header">Set the MAC address you want."</string>
 
     <string name="current_mac">Current MAC address: </string>
     <string name="next_mac">Proposed new MAC address: </string>
     <string name="button_apply">Use this new MAC address</string>
     <string name="button_cancel">Cancel</string>
+    <string name="colon"> : </string>
     <string name="blank"></string>
 </resources>

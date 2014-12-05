@@ -16,6 +16,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name="ManualMac"
+                  android:label="@string/manualmac_app_name"
+                  android:parentActivityName="un.ique.chmacaddroid.Main" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="un.ique.chmacaddroid.Main" />
+        </activity>
         <activity android:name="RandomMac"
                   android:label="@string/randommac_app_name"
                   android:parentActivityName="un.ique.chmacaddroid.Main" >

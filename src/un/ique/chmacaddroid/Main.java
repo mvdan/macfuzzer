@@ -73,6 +73,11 @@ public class Main extends Activity
         }
     }
 
+    public void callManualMac(View view)
+    {
+        Intent intent = new Intent(this, ManualMac.class);
+        startActivity(intent);
+    }
 
     public void callRandomMac(View view)
     {
