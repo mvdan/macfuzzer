@@ -27,7 +27,7 @@ import un.ique.chmacaddroid.Main;
 import un.ique.chmacaddroid.Layer2Address;
 import un.ique.chmacaddroid.NativeIOCtller;
 import un.ique.chmacaddroid.FileStuff;
-import un.ique.chmacaddroid.CMCAlertDialog;
+import un.ique.chmacaddroid.UserNotice;
 import android.widget.TextView;
 import android.view.View;
 import android.content.Intent;
@@ -40,13 +40,13 @@ public class ManualMac extends Activity {
     // Let's hardcode wlan0, for now
     private String dev = "wlan0";
     private Layer2Address mNewNet;
-    private CMCAlertDialog mAlert;
+    private UserNotice mNotice;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.manualmac);
-        mAlert = new CMCAlertDialog(this);
+        mNotice = new UserNotice(this);
 
         Layer2Address newNet = new Layer2Address();
         newNet.setInterfaceName(dev);
@@ -69,18 +69,18 @@ public class ManualMac extends Activity {
         if (macField != null) {
             byte1 = macField.getText().toString();
         } else {
-            mAlert.showSuggestRestartAlert("byte1NoField");
+            mNotice.showSuggestRestartAlert("byte1NoField");
             return "";
         }
         try {
             Integer.parseInt(byte1, 16);
         } catch (NumberFormatException e) {
-            mAlert.showInvalidEntryAlert(R.string.manualmac_notice_not_hex_1,
+            mNotice.showInvalidEntryAlert(R.string.manualmac_notice_not_hex_1,
                                   "byte1NotHex");
             return "";
         }
         if (byte1.length() != 2) {
-            mAlert.showInvalidEntryAlert(R.string.manualmac_notice_2_chars_1,
+            mNotice.showInvalidEntryAlert(R.string.manualmac_notice_2_chars_1,
                                   "byte1Not2");
             return "";
         }
@@ -90,18 +90,18 @@ public class ManualMac extends Activity {
         if (macField != null) {
             byte2 = macField.getText().toString();
         } else {
-            mAlert.showSuggestRestartAlert("byte2NoField");
+            mNotice.showSuggestRestartAlert("byte2NoField");
             return "";
         }
         try {
             Integer.parseInt(byte1, 16);
         } catch (NumberFormatException e) {
-            mAlert.showInvalidEntryAlert(R.string.manualmac_notice_not_hex_2,
+            mNotice.showInvalidEntryAlert(R.string.manualmac_notice_not_hex_2,
                                   "byte2NotHex");
             return "";
         }
         if (byte2.length() != 2) {
-            mAlert.showInvalidEntryAlert(R.string.manualmac_notice_2_chars_2,
+            mNotice.showInvalidEntryAlert(R.string.manualmac_notice_2_chars_2,
                                   "byte2Not2");
             return "";
         }
@@ -111,18 +111,18 @@ public class ManualMac extends Activity {
         if (macField != null) {
             byte3 = macField.getText().toString();
         } else {
-            mAlert.showSuggestRestartAlert("byte3NoField");
+            mNotice.showSuggestRestartAlert("byte3NoField");
             return "";
         }
         try {
             Integer.parseInt(byte2, 16);
         } catch (NumberFormatException e) {
-            mAlert.showInvalidEntryAlert(R.string.manualmac_notice_not_hex_3,
+            mNotice.showInvalidEntryAlert(R.string.manualmac_notice_not_hex_3,
                                   "byte3NotHex");
             return "";
         }
         if (byte3.length() != 2) {
-            mAlert.showInvalidEntryAlert(R.string.manualmac_notice_2_chars_3,
+            mNotice.showInvalidEntryAlert(R.string.manualmac_notice_2_chars_3,
                                   "byte3Not2");
             return "";
         }
@@ -132,18 +132,18 @@ public class ManualMac extends Activity {
         if (macField != null) {
             byte4 = macField.getText().toString();
         } else {
-            mAlert.showSuggestRestartAlert("byte4NoField");
+            mNotice.showSuggestRestartAlert("byte4NoField");
             return "";
         }
         try {
             Integer.parseInt(byte3, 16);
         } catch (NumberFormatException e) {
-            mAlert.showInvalidEntryAlert(R.string.manualmac_notice_not_hex_4,
+            mNotice.showInvalidEntryAlert(R.string.manualmac_notice_not_hex_4,
                                   "byte4NotHex");
             return "";
         }
         if (byte4.length() != 2) {
-            mAlert.showInvalidEntryAlert(R.string.manualmac_notice_2_chars_4,
+            mNotice.showInvalidEntryAlert(R.string.manualmac_notice_2_chars_4,
                                   "byte4Not2");
             return "";
         }
@@ -153,18 +153,18 @@ public class ManualMac extends Activity {
         if (macField != null) {
             byte5 = macField.getText().toString();
         } else {
-            mAlert.showSuggestRestartAlert("byte5NoField");
+            mNotice.showSuggestRestartAlert("byte5NoField");
             return "";
         }
         try {
             Integer.parseInt(byte4, 16);
         } catch (NumberFormatException e) {
-            mAlert.showInvalidEntryAlert(R.string.manualmac_notice_not_hex_5,
+            mNotice.showInvalidEntryAlert(R.string.manualmac_notice_not_hex_5,
                                   "byte5NotHex");
             return "";
         }
         if (byte5.length() != 2) {
-            mAlert.showInvalidEntryAlert(R.string.manualmac_notice_2_chars_5,
+            mNotice.showInvalidEntryAlert(R.string.manualmac_notice_2_chars_5,
                                   "byte5Not2");
             return "";
         }
@@ -174,18 +174,18 @@ public class ManualMac extends Activity {
         if (macField != null) {
             byte6 = macField.getText().toString();
         } else {
-            mAlert.showSuggestRestartAlert("byte6NoField");
+            mNotice.showSuggestRestartAlert("byte6NoField");
             return "";
         }
         try {
             Integer.parseInt(byte6, 16);
         } catch (NumberFormatException e) {
-            mAlert.showInvalidEntryAlert(R.string.manualmac_notice_not_hex_6,
+            mNotice.showInvalidEntryAlert(R.string.manualmac_notice_not_hex_6,
                                   "byte6NotHex");
             return "";
         }
         if (byte6.length() != 2) {
-            mAlert.showInvalidEntryAlert(R.string.manualmac_notice_2_chars_6,
+            mNotice.showInvalidEntryAlert(R.string.manualmac_notice_2_chars_6,
                                   "byte6Not2");
             return "";
         }
@@ -214,7 +214,7 @@ public class ManualMac extends Activity {
         File exe = fs.copyBinaryFile();
         /* TOCTOU but this let's us handle the failure easier */
         if (exe == null) {
-            mAlert.showSuggestRestartAlert("noFileRestart");
+            mNotice.showSuggestRestartAlert("noFileRestart");
         }
 
         fs.runBlob(dev, addr, uid);

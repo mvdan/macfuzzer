@@ -29,11 +29,12 @@ import android.content.DialogInterface;
 import android.app.FragmentManager;
 import android.os.Bundle;
 import android.app.AlertDialog;
+import android.widget.Toast;
 
-public class CMCAlertDialog {
+public class UserNotice {
     private Activity mAct;
 
-    public CMCAlertDialog(Activity act) {
+    public UserNotice(Activity act) {
         mAct = act;
     }
 
@@ -122,4 +123,15 @@ public class CMCAlertDialog {
             return builder.create();
         }
     }
+
+    public void makeMeChangeStatusToast(String msg, int duration) {
+        Toast.makeText(mAct.getApplicationContext(),
+                       msg, duration).show();
+    }
+
+    public void makeMeChangeStatusToast(int resId, int duration) {
+        Toast.makeText(mAct.getApplicationContext(),
+                       resId, duration).show();
+    }
+
 }

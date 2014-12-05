@@ -26,7 +26,7 @@ import android.os.Bundle;
 import un.ique.chmacaddroid.Layer2Address;
 import un.ique.chmacaddroid.NativeIOCtller;
 import un.ique.chmacaddroid.FileStuff;
-import un.ique.chmacaddroid.CMCAlertDialog;
+import un.ique.chmacaddroid.UserNotice;
 import android.widget.TextView;
 import android.view.View;
 import android.content.Intent;
@@ -38,13 +38,13 @@ public class RandomMac extends Activity {
     // Let's hardcode wlan0, for now
     private String dev = "wlan0";
     private Layer2Address mNewNet;
-    private CMCAlertDialog mAlert;
+    private UserNotice mNotice;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.randommac);
-        mAlert = new CMCAlertDialog(this);
+        mNotice = new UserNotice(this);
 
         Layer2Address newNet = new Layer2Address();
         newNet.setInterfaceName(dev);
@@ -87,7 +87,7 @@ public class RandomMac extends Activity {
         File exe = fs.copyBinaryFile();
         /* TOCTOU but this let's us handle the failure easier */
         if (exe == null) {
-            mAlert.showSuggestRestartAlert("noFileRestart");
+            mNotice.showSuggestRestartAlert("noFileRestart");
         }
         fs.runBlob(dev, mNewNet.formatAddress(), uid);
 
