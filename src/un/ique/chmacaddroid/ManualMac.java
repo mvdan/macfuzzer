@@ -168,6 +168,11 @@ public class ManualMac extends Activity {
     }
 
 
+    public void cancel(View view) {
+        setResult(RESULT_CANCELED);
+        finish();
+    }
+
     public void applyNewAddress(View view) {
         String addr = getManualMac();
         if (addr == "") {

@@ -76,13 +76,20 @@ public class Main extends Activity
     public void callManualMac(View view)
     {
         Intent intent = new Intent(this, ManualMac.class);
-        startActivity(intent);
+        startActivityForResult(intent, RANDOMMAC_RESULT);
     }
 
     public void callRandomMac(View view)
     {
         Intent intent = new Intent(this, RandomMac.class);
-        startActivity(intent);
+        startActivityForResult(intent, MANUALMAC_RESULT);
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode,
+                                 Intent data) {
+        if (resultCode == RESULT_EXIT) {
+            finish();
+        }
+    }
 }

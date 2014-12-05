@@ -62,6 +62,11 @@ public class RandomMac extends Activity {
         }
     }
 
+    public void cancel(View view) {
+        setResult(RESULT_CANCELED);
+        finish();
+    }
+
     public void showNewAddress(View view) {
         byte[] nextAddr = mNewNet.generateNewAddress();
         mNewNet = new Layer2Address(nextAddr, dev);
