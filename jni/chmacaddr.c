@@ -33,6 +33,7 @@
 #include <sys/mman.h>
 #include <sys/mount.h>
 #include <signal.h>
+#include <android/log.h>
 
 #include "native_ioctller.h"
 #include "chmacaddr.h"
@@ -43,6 +44,7 @@
 
 const uint8_t mac_hex_length = 17;
 const uint8_t mac_byte_length = 6;
+const static char *TAG = "chmacaddr";
 
 struct clone_args {
     int argc;
@@ -62,11 +64,15 @@ chmaddr_verify_string_format(const char *str_mac)
 {
     int i = 0;
     if (strlen(str_mac) != mac_hex_length) {
+        fprintf(stderr, "Address is not formatted properly.\n"
+                        "It must be %d characters.\n", mac_hex_length);
         return -1;
     }
 
     for (i = 2; i < mac_hex_length; i += 3) {
         if (str_mac[i] != ':') {
+            fprintf(stderr, "Address is not formatted properly.\n"
+                            "Character %d must be a colon (:).\n", i);
             return -2;
         }
     }
@@ -96,8 +102,8 @@ chmaddr_convert_hex_to_byte(const char *strmac, uint8_t *mac)
         hex[0] = strmac[i++];
         hex[1] = strmac[i++];
         if (strmac[i] != ':' && i < mac_hex_length) {
-            fprintf(stderr, "Found '%c' at %d when we expected a "
-                            "colon.\n", strmac[i], i);
+            fprintf(stderr, "Character %d is '%c' but it should be a "
+                            "colon.\n", i, strmac[i]);
             return -1;
         }
         topfour = strtoul(hex, &endptr, 16);
@@ -171,6 +177,7 @@ chmaddr_drop_unneeded_caps(void)
     int i;
     struct __user_cap_header_struct hdr;
     struct __user_cap_data_struct data, have_data;
+    errno = 0;
 
     /* XXX This is borked. Come back to this. */
     /*for (i = 0; prctl(PR_CAPBSET_READ, i, 0, 0, 0) == 1; i++) {
@@ -203,18 +210,20 @@ chmaddr_drop_unneeded_caps(void)
     data.permitted = data.effective;
     data.inheritable = 0;
     if (capset(&hdr, (const cap_user_data_t)&data)) {
-        fprintf(stderr, "Failed to setcap. %s\n", strerror(errno));
+        __android_log_print(ANDROID_LOG_DEBUG, TAG, "Failed to "
+                            "setcap. %s\n", strerror(errno));
         return -1;
     }
 
     if (capget(&hdr, &have_data)) {
-        fprintf(stderr, "Sad. getcap failed. %s\n", strerror(errno));
+        __android_log_print(ANDROID_LOG_DEBUG, TAG, "Sad. getcap "
+                            "failed. %s\n", strerror(errno));
         return -1;
     }
 
     if (data.effective != have_data.effective) {
-        fprintf(stderr, "Our effective caps are not what we set! "
-                        "Gotta go!\n");
+        __android_log_write(ANDROID_LOG_DEBUG, TAG, "Our effective "
+                            "caps are not what we set! Gotta go!\n");
         return -1;
     }
 
@@ -230,11 +239,13 @@ chmaddr_drop_unneeded_caps(void)
 int
 chmaddr_lock_it_down(void)
 {
+    errno = 0;
     /* This is now redundant */
     if (prctl(PR_SET_KEEPCAPS, 1L, 0, 0, 0)) {
-        fprintf(stderr, "Failed to set KEEPCAPS. We don't keep "
-                        "NET_ADMIN when we switch users. %s\n",
-                        strerror(errno));
+        __android_log_print(ANDROID_LOG_DEBUG, TAG, "Failed to set "
+                            "KEEPCAPS. We don't keep NET_ADMIN when "
+                            "we switch users. %s\n",
+                            strerror(errno));
         return -1;
     }
 
@@ -253,8 +264,9 @@ chmaddr_lock_it_down(void)
                                  SECBIT_NO_SETUID_FIXUP_LOCKED |
                                  SECBIT_NOROOT |
                                  SECBIT_NOROOT_LOCKED)) {
-        fprintf(stderr, "Failed to set PR_SET_SECUREBITS cap: %s\n",
-                        strerror(errno));
+        __android_log_print(ANDROID_LOG_DEBUG, TAG, "Failed to set "
+                            "PR_SET_SECUREBITS cap: %s\n",
+                            strerror(errno));
         return -1;
     }
 
@@ -271,7 +283,6 @@ chmaddr_lock_it_down(void)
 int
 chmaddr_clone_me(void *args)
 {
-    printf("clone() succeeded. We are %d\n", getpid());
     clone_args *ca = (clone_args *)args;
     int argc = ca->argc;
     const char **argv = (const char **)ca->argv;
@@ -334,12 +345,12 @@ chmaddr_find_valid_clone(int (*fn)(void *), void *child_stack,
         arg->flags = flags & ~fcombos[i];
         errno = 0;
         pid = clone(fn, child_stack, flags & ~fcombos[i], (void *)arg);
-        printf("clone() returned pid %d with errno %d, index %d\n", pid, errno, i);
         if (pid != -1)
             return pid;
     }
-    fprintf(stderr, "We failed to find a valid set of parameters for "
-                    "clone(): %s\n", strerror(errno));
+    __android_log_print(ANDROID_LOG_DEBUG, TAG, "We failed to find "
+                        "a valid set of parameters for "
+                        "clone(): %s\n", strerror(errno));
     return -1;
 }
 
@@ -362,6 +373,7 @@ chmaddr_make_it_so(int argc, const char * argv[])
     void *new_stack;
     const int stack_size = sysconf(_SC_PAGESIZE);
     int flags, i, pid;
+    errno = 0;
 
     ca = (clone_args *)malloc(sizeof(clone_args));
     new_stack = mmap(NULL, stack_size, PROT_READ | PROT_WRITE,
@@ -386,38 +398,47 @@ chmaddr_make_it_so(int argc, const char * argv[])
     flags |= CLONE_NEWUTS;
     flags |= CLONE_UNTRACED;
 
-    fprintf(stderr, "Clone it\n");
     struct sigaction sa;
     memset(&sa, 0, sizeof(struct sigaction));
     sa.sa_sigaction = &sa_sigaction_sigchld;
     sa.sa_flags = SA_SIGINFO;
     if (sigaction(SIGCHLD, (const struct sigaction *)&sa, NULL)) {
-        fprintf(stderr, "sigaction() failed: %s\n", strerror(errno));
+        __android_log_print(ANDROID_LOG_DEBUG, TAG, "sigaction() "
+                            "failed: %s\n", strerror(errno));
         return -1;
     }
-    pid = chmaddr_find_valid_clone(&chmaddr_clone_me, new_stack + stack_size, flags, ca);
-    printf("chmaddr_find_valid_clone() returned %d\n", pid);
+    pid = chmaddr_find_valid_clone(&chmaddr_clone_me,
+                                   new_stack + stack_size, flags, ca);
     if (pid != -1) {
         int status, exitcode;
-        printf("Waiting on %d\n", pid);
+        __android_log_print(ANDROID_LOG_DEBUG, TAG, "Waiting on %d\n",
+                            pid);
         int ret = waitpid(pid, &status, __WCLONE);
         if (ret == pid) {
             if (WIFEXITED(status)) {
-                printf("%d exited with %d\n", pid, WEXITSTATUS(status));
+                __android_log_print(ANDROID_LOG_DEBUG, TAG, "pid %d "
+                                    "exited with %d\n", pid,
+                                    WEXITSTATUS(status));
                 return WEXITSTATUS(status);
             } else if (WIFSIGNALED(status)) {
-                fprintf(stderr, "Child was terminated by sig %d\n", WTERMSIG(status));
+                __android_log_print(ANDROID_LOG_DEBUG, TAG, "Child was "
+                                    "terminated by sig %d\n",
+                                    WTERMSIG(status));
             } else {
-                fprintf(stderr, "Something else killed our baby\n");
+                __android_log_write(ANDROID_LOG_DEBUG, TAG, "Something "
+                                    "else killed our baby\n");
             }
         } else {
-            fprintf(stderr, "%d, Got error! ECHILD? %d, EINTR? %d, EINVAL? %d\n",
-                            ret, errno == ECHILD, errno == EINTR, errno == EINVAL);
+            __android_log_print(ANDROID_LOG_DEBUG, TAG, "%d, Got "
+                                "error! ECHILD? %d, EINTR? %d, EINVAL? "
+                                "%d\n", ret, errno == ECHILD,
+                                errno == EINTR, errno == EINVAL);
         }
         return -1;
     } else {
-        fprintf(stderr, "Failed to clone after dropping caps: %s\n",
-                        strerror(errno));
+        __android_log_print(ANDROID_LOG_DEBUG, TAG, "Failed to clone "
+                            "after dropping caps: %s\n",
+                            strerror(errno));
         return -1;
     }
 }
@@ -521,11 +542,12 @@ chmaddr_get_group_id(const char *grpname, gid_t *gid)
     grp = getgrnam(grpname);
     if (grp == NULL) {
         if (errno == 0) {
-            fprintf(stderr, "No group found with groupname %s\n",
-                    grpname);
+            __android_log_print(ANDROID_LOG_DEBUG, TAG, "No group "
+                                "found with groupname %s\n", grpname);
         } else {
-            fprintf(stderr, "getpwuid_r lookup failed for groupname "
-                    " %s: %s\n", grpname, strerror(errno));
+            __android_log_print(ANDROID_LOG_DEBUG, TAG, "getpwuid_r "
+                                "lookup failed for groupname %s: %s\n",
+                                grpname, strerror(errno));
         }
         return -1;
     }
@@ -549,7 +571,8 @@ chmaddr_get_users_groups(uid_t uid)
     struct passwd *pwd;
 
     if (chmaddr_get_group_id(inet_group, &gid)) {
-        fprintf(stderr, "Failed to retrieve username lookup.\n");
+        __android_log_write(ANDROID_LOG_DEBUG, TAG, "Failed to "
+                            "retrieve username lookup.\n");
         return NULL;
     }
 
@@ -557,10 +580,12 @@ chmaddr_get_users_groups(uid_t uid)
     pwd = getpwuid(uid);
     if (pwd == NULL) {
         if (errno == 0) {
-            fprintf(stderr, "No user found with uid %u\n", uid);
+            __android_log_print(ANDROID_LOG_DEBUG, TAG, "No user found "
+                                "with uid %u\n", uid);
         } else {
-            fprintf(stderr, "getpwuid_r lookup failed for uid %u: "
-                            "%s\n", uid, strerror(errno));
+            __android_log_print(ANDROID_LOG_DEBUG, TAG, "getpwuid_r "
+                                "lookup failed for uid %u: " "%s\n",
+                                uid, strerror(errno));
         }
         return NULL;
     }
@@ -589,41 +614,48 @@ chmaddr_switch_user(uid_t uid)
     struct passwd *pwd;
     struct __user_cap_header_struct hdr;
     struct __user_cap_data_struct data, have_data;
+    errno = 0;
 
     if (!uid) {
-        fprintf(stderr, "Do not try switching to uid 0.\n");
+        __android_log_write(ANDROID_LOG_DEBUG, TAG, "Do not try "
+                            "switching to uid 0.\n");
         return -1;
     }
 
     if (setresuid(uid, uid, uid)) {
-        fprintf(stderr, "setuid to %u failed: %s.\n", uid,
-                        strerror(errno));
+        __android_log_print(ANDROID_LOG_DEBUG, TAG, "setuid to %u "
+                            "failed: %s.\n", uid, strerror(errno));
         return -1;
     }
     if (getuid() != uid) {
-        fprintf(stderr, "setuid failed. uid: %u.\n", getuid());
+        __android_log_print(ANDROID_LOG_DEBUG, TAG, "setuid failed. "
+                            "uid: %u.\n", getuid());
         return -1;
     }
 
     groups = chmaddr_get_users_groups(uid);
     if (groups == NULL) {
-        fprintf(stderr, "Failed to retrieve user's groups.\n");
+        __android_log_write(ANDROID_LOG_DEBUG, TAG, "Failed to "
+                            "retrieve user's groups.\n");
         return -1;
     }
 
     if (setresgid(groups[0], groups[0], groups[0])) {
-        fprintf(stderr, "setgid to %u failed: %s.\n", groups[0],
-                        strerror(errno));
+        __android_log_print(ANDROID_LOG_DEBUG, TAG, "setgid to %u "
+                            "failed: %s.\n", groups[0],
+                            strerror(errno));
         return -1;
     }
     if (getgid() != groups[0]) {
-        fprintf(stderr, "setgid failed. gid: %u.\n", getgid());
+        __android_log_print(ANDROID_LOG_DEBUG, TAG, "setgid failed. "
+                            "gid: %u.\n", getgid());
         return -1;
     }
     /* Most important, we need to re-add inet group */
     if (setgroups(2, groups)) {
-        fprintf(stderr, "Failed to set supp groups groups. %s\n",
-                        strerror(errno));
+        __android_log_print(ANDROID_LOG_DEBUG, TAG, "Failed to set "
+                            "supp groups groups. %s\n",
+                            strerror(errno));
         return -1;
     }
 
@@ -636,20 +668,23 @@ chmaddr_switch_user(uid_t uid)
     data.permitted = data.effective;
 
     if (capset(&hdr, (const cap_user_data_t)&data)) {
-        fprintf(stderr, "Failed to setcap - dropping SETGUID. %s\n",
-                        strerror(errno));
+        __android_log_print(ANDROID_LOG_DEBUG, TAG, "Failed to "
+                            "setcap - dropping SETGUID. %s\n",
+                            strerror(errno));
         return -1;
     }
 
     if (capget(&hdr, &have_data)) {
-        fprintf(stderr, "Sad. getcap failed after dropping SETGUID. "
-                        "%s\n", strerror(errno));
+        __android_log_print(ANDROID_LOG_DEBUG, TAG, "Sad. getcap "
+                            "failed after dropping SETGUID. "
+                            "%s\n", strerror(errno));
         return -1;
     }
 
     if (data.effective != have_data.effective) {
-        fprintf(stderr, "Our effective caps are not what we set after "
-                        "dropping SETGUID! Gotta go!\n");
+        __android_log_write(ANDROID_LOG_DEBUG, TAG, "Our effective "
+                            "caps are not what we set after "
+                            "dropping SETGUID! Gotta go!\n");
         return -1;
     }
 
@@ -685,27 +720,28 @@ chmaddr_finish_what_we_started(int argc, const char * argv[])
         return -1;
     }
 
-    printf("Switching to uid %u\n", uid);
     if (chmaddr_switch_user(uid)) {
+        if (errno != 0)
+            fprintf(stderr, "We failed to reach a safe state.\n%s\n",
+                    strerror(errno));
         return -1;
     }
 
     iface = argv[1];
 
-    fprintf(stderr, "Dev: %s. Beginning address format "
-                    "verification.\n", iface);
     if (chmaddr_verify_string_format(argv[2])) {
-        fprintf(stderr, "Address format failed: %s, %zd.\n", argv[2],
-                        strlen(argv[2]));
+        __android_log_print(ANDROID_LOG_DEBUG, TAG, "Address format "
+                            "failed: %s, %zd.\n", argv[2],
+                            strlen(argv[2]));
+
         return -1;
     }
-    fprintf(stderr, "Address format passed.\n");
 
     if (chmaddr_convert_hex_to_byte(argv[2], mac)) {
-        fprintf(stderr, "Conversion from hex to byte failed.\n");
+        __android_log_write(ANDROID_LOG_DEBUG, TAG,
+                            "Conversion from hex to byte failed.\n");
         return -1;
     }
-    fprintf(stderr, "Conversion from hex to byte passed.\n");
 
     if (chmaddr_confirm_caps_dropped()) {
         return -1;
@@ -713,14 +749,16 @@ chmaddr_finish_what_we_started(int argc, const char * argv[])
 
     int retval = nativeioc_set_mac_addr(iface, mac);
     if (retval) {
-        fprintf(stderr, "set_mac_addr() returned with %d, %s.\n",
-                        retval, strerror(errno));
-        fprintf(stderr, "6 MAC octets: ");
-        int i;
-        for (i = 0; i < mac_byte_length; i++)
-            fprintf(stderr, "%d ", mac[i]);
+        if (errno == ENODEV) {
+            fprintf(stderr, "Please temporarily enable your network "
+                            "card. We could not find it.\n");
+            __android_log_print(ANDROID_LOG_DEBUG, TAG,
+                                "nativeioc_set_mac_addr() returned %d "
+                                "with %s.\n", retval, strerror(errno));
+        } else {
+            fprintf(stderr, "%s.\n", strerror(errno));
+        }
     }
-    fprintf(stderr, "set_mac_addr() successful.\n");
     return retval;
 }
 
@@ -749,15 +787,18 @@ chmaddr_confirm_caps_dropped(void)
             return chmaddr_switch_user(0) ? 0 : -1;
         }
         if (errno == ENOENT) {
-            fprintf(stderr, "%s isn't a dir. Please report this.\n",
-                    CHROOT_DIR);
+            __android_log_write(ANDROID_LOG_DEBUG, TAG, CHROOT_DIR
+                                " isn't a dir. Please report this.\n");
             /* It's likely safe to assume this would've
              * successfully failed due to nocap if CHROOT_DIR existed,
              * but if we don't deny this then we'll never know this
              * is a bad check for some devices. */
         }
     }
-    fprintf(stderr, "We think we can still chroot, cap drop failed!\n");
+    fprintf(stderr, "Unable to obtain secure, "
+                    "least-privileged, state.\n");
+    __android_log_write(ANDROID_LOG_DEBUG, TAG,
+                        "We think we can still chroot, cap drop failed!");
     return -1;
 }
 #undef CHROOT_DIR

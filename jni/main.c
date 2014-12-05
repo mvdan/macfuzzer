@@ -21,7 +21,10 @@
 
 #include <stdio.h>
 #include <errno.h>
+#include <android/log.h>
 #include "chmacaddr.h"
+
+const static char *TAG = "chmacaddr_main";
 
 /** Kick it off
  * Check if we can drop capabilities, then prevent regaining
@@ -35,19 +38,26 @@ main(int argc, char * argv[])
 {
     int drop_caps = chmaddr_can_drop_caps();
     if (drop_caps != 1) {
-        fprintf(stderr, "Neither SYS_ADMIN nor SETPCAP are not "
-                        "available. grrrr! %s\n", strerror(errno));
-        return -1;
+        __android_log_print(ANDROID_LOG_DEBUG, TAG, "Neither SYS_ADMIN "
+                            "nor SETPCAP are not available. grrrr! "
+                            "%s\n", strerror(errno));
+        goto bad_state;
     }
 
     if (chmaddr_lock_it_down()) {
+        goto bad_state;
         return -1;
     }
 
     if (chmaddr_drop_unneeded_caps()) {
-        return -1;
+        goto bad_state;
     }
 
     return chmaddr_make_it_so(argc, (const char **)argv);
+
+bad_state:
+    fprintf(stderr, "We failed while entering a safe state. Check logs "
+                    "for details. %s", errno ? strerror(errno) : "");
+    return -1;
 }
 

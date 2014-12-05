@@ -103,7 +103,8 @@ public class RandomMac extends Activity {
         } else {
             String msg = getString(R.string.current) + ": ";
             msg += newL2A.formatAddress() + "\n";
-            msg += getString(R.string.expected) + ": " + newAddr + "\n";
+            msg += getString(R.string.expected) + ": " + newAddr;
+            msg += "\n\n";
             if (pr.getStdOut().compareTo("") != 0) {
                 msg += pr.getStdOut() + "\n";
             }

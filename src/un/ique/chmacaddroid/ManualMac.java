@@ -228,7 +228,8 @@ public class ManualMac extends Activity {
         } else {
             String msg = getString(R.string.current) + ": ";
             msg += mNewNet.formatAddress() + "\n";
-            msg += getString(R.string.expected) + ": " + addr  + "\n";
+            msg += getString(R.string.expected) + ": " + addr;
+            msg += "\n\n";
             if (pr.getStdOut().compareTo("") != 0) {
                 msg += pr.getStdOut() + "\n";
             }

@@ -111,6 +111,7 @@ int nativeioc_set_mac_addr(const char *iface, const uint8_t *mac) {
     struct ifreq dev;
     int i;
     strncpy(dev.ifr_name, iface, 6);
+    errno = 0;
 
     int sock = socket(AF_INET, SOCK_DGRAM, 0);
     if (sock < 0) {
