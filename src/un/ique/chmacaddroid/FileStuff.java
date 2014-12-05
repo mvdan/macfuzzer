@@ -38,9 +38,17 @@ public class FileStuff
 {
     private final String binaryName = "chmacaddr";
     private Activity mCurrAct = null;
+    private String lastOut, lastErr;
+    int lastCode;
 
     public FileStuff(Activity act) {
         mCurrAct = act;
+        lastOut = "";
+        lastErr = "";
+    }
+
+    public ProcessResult getLastProcessResult() {
+        return new ProcessResult(lastOut, lastErr, lastCode);
     }
 
     public File copyBinaryFile() {
@@ -94,11 +102,18 @@ public class FileStuff
         return new File(dir, filename);
     }
 
-    public int runBlob(String dev, String addr, String uid) {
+    private ProcessResult getPR(String out, String err, int code) {
+        lastOut = out;
+        lastErr = err;
+        lastCode = code;
+        return new ProcessResult(out, err, code);
+    }
+
+    public ProcessResult runBlob(String dev, String addr, String uid) {
         String[] args = {"su", "0",
                          getPathToFile(null).getAbsolutePath(),
                          dev, addr, uid};
-        return runBlob(args, false).getExitCode();
+        return runBlob(args, false);
     }
 
     public ProcessResult runBlob(String[] args, boolean printOut) {
@@ -142,8 +157,8 @@ public class FileStuff
             }
         } catch (IOException e) {
             // TODO Show a useful notification in this case, too
-            return new ProcessResult(out, err, code);
+            return getPR(out, err, code);
         }
-        return new ProcessResult(out, err, code);
+        return getPR(out, err, code);
     }
 }

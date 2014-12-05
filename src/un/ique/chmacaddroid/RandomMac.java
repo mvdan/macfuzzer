@@ -27,6 +27,7 @@ import un.ique.chmacaddroid.Layer2Address;
 import un.ique.chmacaddroid.NativeIOCtller;
 import un.ique.chmacaddroid.FileStuff;
 import un.ique.chmacaddroid.UserNotice;
+import un.ique.chmacaddroid.ProcessResult;
 import android.widget.TextView;
 import android.view.View;
 import android.content.Intent;
@@ -93,7 +94,7 @@ public class RandomMac extends Activity {
         if (exe == null) {
             mNotice.showSuggestRestartAlert("noFileRestart");
         }
-        fs.runBlob(dev, newAddr, uid);
+        ProcessResult pr = fs.runBlob(dev, newAddr, uid);
 
         newL2A.setAddress(ctller.getCurrentMacAddr());
         if (newAddr.compareTo(newL2A.formatAddress()) == 0) {

@@ -28,6 +28,7 @@ import un.ique.chmacaddroid.Layer2Address;
 import un.ique.chmacaddroid.NativeIOCtller;
 import un.ique.chmacaddroid.FileStuff;
 import un.ique.chmacaddroid.UserNotice;
+import un.ique.chmacaddroid.ProcessResult;
 import android.widget.TextView;
 import android.view.View;
 import android.content.Intent;
@@ -218,7 +219,7 @@ public class ManualMac extends Activity {
             mNotice.showSuggestRestartAlert("noFileRestart");
         }
 
-        fs.runBlob(dev, addr, uid);
+        ProcessResult pr = fs.runBlob(dev, addr, uid);
 
         mNewNet.setAddress(ctller.getCurrentMacAddr());
         if (addr.compareTo(mNewNet.formatAddress()) == 0) {
