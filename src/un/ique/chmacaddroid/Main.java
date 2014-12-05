@@ -33,6 +33,10 @@ import java.io.File;
 
 public class Main extends Activity
 {
+    private static final int RANDOMMAC_RESULT = 0x1d01;
+    private static final int MANUALMAC_RESULT = 0x1d02;
+    public static final int RESULT_EXIT = RESULT_FIRST_USER  + 1;
+
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState)
