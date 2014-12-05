@@ -124,7 +124,7 @@ public class ManualMacTest extends ActivityInstrumentationTestCase2<ManualMac> {
         String emptyString = "";
         Handler handler = new Handler(Looper.getMainLooper());
         ManualMacRunnable mMR = new ManualMacRunnable(mNextMacVal1);
-        int sleepTime = 50;
+        int sleepTime = 250;
 
         mMR.setText(notHex);
         handler.postAtFrontOfQueue(mMR);
@@ -135,6 +135,12 @@ public class ManualMacTest extends ActivityInstrumentationTestCase2<ManualMac> {
         handler.postAtFrontOfQueue(mMR);
         Thread.sleep(sleepTime);
         assertEquals("", mMM.getManualMac());
+        mMR.setText(emptyString);
+        handler.postAtFrontOfQueue(mMR);
+        Thread.sleep(sleepTime);
+        mMR.setText(emptyString);
+        handler.postAtFrontOfQueue(mMR);
+        Thread.sleep(sleepTime);
         mMR.setText(hex);
         handler.postAtFrontOfQueue(mMR);
         Thread.sleep(sleepTime);
@@ -144,11 +150,17 @@ public class ManualMacTest extends ActivityInstrumentationTestCase2<ManualMac> {
         handler.postAtFrontOfQueue(mMR);
         Thread.sleep(sleepTime);
         assertEquals("", mMM.getManualMac());
+        mMR.setText(emptyString);
+        handler.postAtFrontOfQueue(mMR);
+        Thread.sleep(sleepTime);
 
         mMR.setText(emptyString);
         handler.postAtFrontOfQueue(mMR);
         Thread.sleep(sleepTime);
         assertEquals("", mMM.getManualMac());
+        mMR.setText(emptyString);
+        handler.postAtFrontOfQueue(mMR);
+        Thread.sleep(sleepTime);
         mMR.setText(hex);
         handler.postAtFrontOfQueue(mMR);
         Thread.sleep(sleepTime);
@@ -158,11 +170,17 @@ public class ManualMacTest extends ActivityInstrumentationTestCase2<ManualMac> {
         handler.postAtFrontOfQueue(mMR);
         Thread.sleep(sleepTime);
         assertEquals("", mMM.getManualMac());
+        mMR.setText(emptyString);
+        handler.postAtFrontOfQueue(mMR);
+        Thread.sleep(sleepTime);
 
         mMR.setText(emptyString);
         handler.postAtFrontOfQueue(mMR);
         Thread.sleep(sleepTime);
         assertEquals("", mMM.getManualMac());
+        mMR.setText(emptyString);
+        handler.postAtFrontOfQueue(mMR);
+        Thread.sleep(sleepTime);
         mMR.setText(hex);
         handler.postAtFrontOfQueue(mMR);
         Thread.sleep(sleepTime);
@@ -172,11 +190,17 @@ public class ManualMacTest extends ActivityInstrumentationTestCase2<ManualMac> {
         handler.postAtFrontOfQueue(mMR);
         Thread.sleep(sleepTime);
         assertEquals("", mMM.getManualMac());
+        mMR.setText(emptyString);
+        handler.postAtFrontOfQueue(mMR);
+        Thread.sleep(sleepTime);
 
         mMR.setText(emptyString);
         handler.postAtFrontOfQueue(mMR);
         Thread.sleep(sleepTime);
         assertEquals("", mMM.getManualMac());
+        mMR.setText(emptyString);
+        handler.postAtFrontOfQueue(mMR);
+        Thread.sleep(sleepTime);
         mMR.setText(hex);
         handler.postAtFrontOfQueue(mMR);
         Thread.sleep(sleepTime);
@@ -186,11 +210,17 @@ public class ManualMacTest extends ActivityInstrumentationTestCase2<ManualMac> {
         handler.postAtFrontOfQueue(mMR);
         Thread.sleep(sleepTime);
         assertEquals("", mMM.getManualMac());
+        mMR.setText(emptyString);
+        handler.postAtFrontOfQueue(mMR);
+        Thread.sleep(sleepTime);
 
         mMR.setText(emptyString);
         handler.postAtFrontOfQueue(mMR);
         Thread.sleep(sleepTime);
         assertEquals("", mMM.getManualMac());
+        mMR.setText(emptyString);
+        handler.postAtFrontOfQueue(mMR);
+        Thread.sleep(sleepTime);
         mMR.setText(hex);
         handler.postAtFrontOfQueue(mMR);
         Thread.sleep(sleepTime);
@@ -200,11 +230,17 @@ public class ManualMacTest extends ActivityInstrumentationTestCase2<ManualMac> {
         handler.postAtFrontOfQueue(mMR);
         Thread.sleep(sleepTime);
         assertEquals("", mMM.getManualMac());
+        mMR.setText(emptyString);
+        handler.postAtFrontOfQueue(mMR);
+        Thread.sleep(sleepTime);
 
         mMR.setText(emptyString);
         handler.postAtFrontOfQueue(mMR);
         Thread.sleep(sleepTime);
         assertEquals("", mMM.getManualMac());
+        mMR.setText(emptyString);
+        handler.postAtFrontOfQueue(mMR);
+        Thread.sleep(sleepTime);
         mMR.setText(hex);
         handler.postAtFrontOfQueue(mMR);
         Thread.sleep(sleepTime);
@@ -216,12 +252,16 @@ public class ManualMacTest extends ActivityInstrumentationTestCase2<ManualMac> {
         Handler handler = new Handler(Looper.getMainLooper());
         ManualMacRunnable mMR = new ManualMacRunnable(mNextMacVal1);
         String newVal = "abc", validVal = "12";
-        int sleepTime = 50;
+        String emptyString = "";
+        int sleepTime = 250;
 
         mMR.setText(newVal);
         handler.postAtFrontOfQueue(mMR);
         Thread.sleep(sleepTime);
         assertEquals("", mMM.getManualMac());
+        mMR.setText(emptyString);
+        handler.postAtFrontOfQueue(mMR);
+        Thread.sleep(sleepTime);
         mMR.setText(validVal);
         handler.postAtFrontOfQueue(mMR);
         Thread.sleep(sleepTime);
@@ -231,6 +271,9 @@ public class ManualMacTest extends ActivityInstrumentationTestCase2<ManualMac> {
         handler.postAtFrontOfQueue(mMR);
         Thread.sleep(sleepTime);
         assertEquals("", mMM.getManualMac());
+        mMR.setText(emptyString);
+        handler.postAtFrontOfQueue(mMR);
+        Thread.sleep(sleepTime);
         mMR.setText(validVal);
         handler.postAtFrontOfQueue(mMR);
         Thread.sleep(sleepTime);
@@ -240,6 +283,9 @@ public class ManualMacTest extends ActivityInstrumentationTestCase2<ManualMac> {
         handler.postAtFrontOfQueue(mMR);
         Thread.sleep(sleepTime);
         assertEquals("", mMM.getManualMac());
+        mMR.setText(emptyString);
+        handler.postAtFrontOfQueue(mMR);
+        Thread.sleep(sleepTime);
         mMR.setText(validVal);
         handler.postAtFrontOfQueue(mMR);
         Thread.sleep(sleepTime);
@@ -249,6 +295,9 @@ public class ManualMacTest extends ActivityInstrumentationTestCase2<ManualMac> {
         handler.postAtFrontOfQueue(mMR);
         Thread.sleep(sleepTime);
         assertEquals("", mMM.getManualMac());
+        mMR.setText(emptyString);
+        handler.postAtFrontOfQueue(mMR);
+        Thread.sleep(sleepTime);
         mMR.setText(validVal);
         handler.postAtFrontOfQueue(mMR);
         Thread.sleep(sleepTime);
@@ -258,6 +307,9 @@ public class ManualMacTest extends ActivityInstrumentationTestCase2<ManualMac> {
         handler.postAtFrontOfQueue(mMR);
         Thread.sleep(sleepTime);
         assertEquals("", mMM.getManualMac());
+        mMR.setText(emptyString);
+        handler.postAtFrontOfQueue(mMR);
+        Thread.sleep(sleepTime);
         mMR.setText(validVal);
         handler.postAtFrontOfQueue(mMR);
         Thread.sleep(sleepTime);
@@ -266,7 +318,10 @@ public class ManualMacTest extends ActivityInstrumentationTestCase2<ManualMac> {
         mMR.setText(newVal);
         handler.postAtFrontOfQueue(mMR);
         Thread.sleep(sleepTime);
-        assertEquals("", mMM.getManualMac());
+        assertEquals("12:12:12:12:12:ab", mMM.getManualMac());
+        mMR.setText(emptyString);
+        handler.postAtFrontOfQueue(mMR);
+        Thread.sleep(sleepTime);
         mMR.setText(validVal);
         handler.postAtFrontOfQueue(mMR);
         Thread.sleep(sleepTime);
