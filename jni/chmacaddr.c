@@ -42,8 +42,6 @@
 #define _GNU_SOURCE
 #include <sched.h>
 
-const uint8_t mac_hex_length = 17;
-const uint8_t mac_byte_length = 6;
 const static char *TAG = "chmacaddr";
 
 struct clone_args {
@@ -92,7 +90,7 @@ chmaddr_verify_string_format(const char *str_mac)
  * chmaddr_verify_string_format() before calling this function.
  */
 int
-chmaddr_convert_hex_to_byte(const char *strmac, uint8_t *mac)
+chmaddr_convert_hex_decode(const char *strmac, uint8_t *mac)
 {
     int i = 0, octet = 0;
     char hex[3], *endptr;
@@ -170,6 +168,9 @@ chmaddr_can_drop_caps(void)
  *   clearing our bounding set, dropping our current capabilities,
  *   and when we confirm our capabilities aren't what we set.
  * Return 0 on success.
+ *
+ * Note, errno is reset to 0 at the beginning of this function. You
+ * may use it on failure.
  */
 int
 chmaddr_drop_unneeded_caps(void)
@@ -235,6 +236,9 @@ chmaddr_drop_unneeded_caps(void)
  * switch to a new, non-root, user.
  * Return -1 on failure.
  * Return 0 on success.
+ *
+ * Note, errno is reset to 0 at the beginning of this function. You
+ * may use it on failure.
  */
 int
 chmaddr_lock_it_down(void)
@@ -322,6 +326,9 @@ sa_sigaction_sigchld(int signum, siginfo_t *si, void *cxt)
  * the *flags*.
  * Return -1 when we completelely fail and give up.
  * Return the pid of the resulting child process on success.
+ *
+ * Note, errno is reset to 0 at the beginning of this function. You
+ * may use it on failure.
  */
 int
 chmaddr_find_valid_clone(int (*fn)(void *), void *child_stack,
@@ -365,6 +372,9 @@ chmaddr_find_valid_clone(int (*fn)(void *), void *child_stack,
  * We wait until our child exits.
  * Return -1 on failure.
  * Return the status code from the child on success.
+ *
+ * Note, errno is reset to 0 at the beginning of this function. You
+ * may use it on failure.
  */
 int
 chmaddr_make_it_so(int argc, const char * argv[])
@@ -376,6 +386,10 @@ chmaddr_make_it_so(int argc, const char * argv[])
     errno = 0;
 
     ca = (clone_args *)malloc(sizeof(clone_args));
+    if (ca == NULL) {
+        return -1;
+    }
+
     new_stack = mmap(NULL, stack_size, PROT_READ | PROT_WRITE,
                      MAP_PRIVATE | MAP_ANONYMOUS | MAP_GROWSDOWN |
                      MAP_STACK, -1, 0);
@@ -387,6 +401,10 @@ chmaddr_make_it_so(int argc, const char * argv[])
 
     ca->argc = argc;
     ca->argv = malloc(argc*sizeof(char *));
+    if (ca->argv == NULL) {
+        return -1;
+    }
+
     for (i = 0; i < argc; ++i) {
         ca->argv[i] = strdup(argv[i]);
     }
@@ -532,6 +550,9 @@ chmaddr_get_users_groups(uid_t uid)
  * is available.
  * Return -1 if we can't find the specified group.
  * Return 0 on success.
+ *
+ * Note, errno is reset to 0 at the beginning of this function. You
+ * may use it on failure.
  */
 int
 chmaddr_get_group_id(const char *grpname, gid_t *gid)
@@ -562,15 +583,18 @@ chmaddr_get_group_id(const char *grpname, gid_t *gid)
  * Return an array, size 2, of gid_t, where index 0 is the user's
  *   primary group, and index 1 is the gid of group 'inet'.
  * Return NULL on failure.
+ *
+ * Note, errno is reset to 0 at the beginning of this function. You
+ * may use it on failure.
  */
-const gid_t*
+const gid_t *
 chmaddr_get_users_groups(uid_t uid)
 {
     const char *inet_group = "inet";
-    gid_t gid, *gids;
+    gid_t inet_gid, *gids;
     struct passwd *pwd;
 
-    if (chmaddr_get_group_id(inet_group, &gid)) {
+    if (chmaddr_get_group_id(inet_group, &inet_gid)) {
         __android_log_write(ANDROID_LOG_DEBUG, TAG, "Failed to "
                             "retrieve username lookup.\n");
         return NULL;
@@ -591,7 +615,7 @@ chmaddr_get_users_groups(uid_t uid)
     }
     gids = malloc(sizeof(gid_t)*2);
     gids[0] = pwd->pw_gid;
-    gids[1] = gid;
+    gids[1] = inet_gid;
 
     return gids;
 }
@@ -606,6 +630,9 @@ chmaddr_get_users_groups(uid_t uid)
  * is the only capability we will need when we set the MAC address).
  * Return -1 on failure
  * Return 0 on success.
+ *
+ * Note, errno is reset to 0 at the beginning of this function. You
+ * may use it on failure.
  */
 int
 chmaddr_switch_user(uid_t uid)
@@ -628,6 +655,8 @@ chmaddr_switch_user(uid_t uid)
         return -1;
     }
     if (getuid() != uid) {
+        /* XXX We don't handle uid == -1 here,
+         * but I don't think it's necessary */
         __android_log_print(ANDROID_LOG_DEBUG, TAG, "setuid failed. "
                             "uid: %u.\n", getuid());
         return -1;
@@ -737,7 +766,7 @@ chmaddr_finish_what_we_started(int argc, const char * argv[])
         return -1;
     }
 
-    if (chmaddr_convert_hex_to_byte(argv[2], mac)) {
+    if (chmaddr_convert_hex_decode(argv[2], mac)) {
         __android_log_write(ANDROID_LOG_DEBUG, TAG,
                             "Conversion from hex to byte failed.\n");
         return -1;
@@ -784,7 +813,7 @@ chmaddr_confirm_caps_dropped(void)
     }*/
     if (chroot(CHROOT_DIR) == -1) {
         if (errno == EPERM) {
-            return chmaddr_switch_user(0) ? 0 : -1;
+            return chmaddr_switch_user(1234) ? 0 : -1;
         }
         if (errno == ENOENT) {
             __android_log_write(ANDROID_LOG_DEBUG, TAG, CHROOT_DIR
@@ -795,7 +824,7 @@ chmaddr_confirm_caps_dropped(void)
              * is a bad check for some devices. */
         }
     }
-    fprintf(stderr, "Unable to obtain secure, "
+    fprintf(stderr, "Unable to enter secure, "
                     "least-privileged, state.\n");
     __android_log_write(ANDROID_LOG_DEBUG, TAG,
                         "We think we can still chroot, cap drop failed!");

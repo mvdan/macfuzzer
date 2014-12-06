@@ -46,7 +46,6 @@ main(int argc, char * argv[])
 
     if (chmaddr_lock_it_down()) {
         goto bad_state;
-        return -1;
     }
 
     if (chmaddr_drop_unneeded_caps()) {

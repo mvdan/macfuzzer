@@ -77,23 +77,23 @@ test_convert_hex_to_byte(void *data)
     (void)data;
 
     hexmac = strdup("invalidmacaddress");
-    tt_int_op(chmaddr_convert_hex_to_byte(hexmac, bytemac), ==, -1);
+    tt_int_op(chmaddr_convert_hex_decode(hexmac, bytemac), ==, -1);
     tt_mem_op(&bytemac, ==, &expected1, sizeof(bytemac));
     free(hexmac);
     hexmac = strdup("in:va:lid:macaddr");
-    tt_int_op(chmaddr_convert_hex_to_byte(hexmac, bytemac), ==, -2);
+    tt_int_op(chmaddr_convert_hex_decode(hexmac, bytemac), ==, -2);
     tt_mem_op(&bytemac, ==, &expected1, sizeof(bytemac));
     free(hexmac);
     hexmac = strdup("001:1:22:33:44:55:66");
-    tt_int_op(chmaddr_convert_hex_to_byte(hexmac, bytemac), ==, -1);
+    tt_int_op(chmaddr_convert_hex_decode(hexmac, bytemac), ==, -1);
     tt_mem_op(&bytemac, ==, &expected1, sizeof(bytemac));
     free(hexmac);
     hexmac = strdup("00:11:22:33:44:55:66");
-    tt_int_op(chmaddr_convert_hex_to_byte(hexmac, bytemac), ==, 0);
+    tt_int_op(chmaddr_convert_hex_decode(hexmac, bytemac), ==, 0);
     tt_mem_op(&bytemac, ==, &expected2, sizeof(bytemac));
     free(hexmac);
     hexmac = strdup("00:11:22:33:44:55");
-    tt_int_op(chmaddr_convert_hex_to_byte(hexmac, bytemac), ==, 0);
+    tt_int_op(chmaddr_convert_hex_decode(hexmac, bytemac), ==, 0);
     tt_mem_op(&bytemac, ==, &expected2, sizeof(bytemac));
     free(hexmac);
     hexmac = NULL;

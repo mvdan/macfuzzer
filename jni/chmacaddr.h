@@ -25,15 +25,15 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-extern const uint8_t mac_hex_length;
-extern const uint8_t mac_byte_length;
+static const uint8_t mac_hex_length = 17;
+static const uint8_t mac_byte_length = 6;
 
 typedef struct clone_args clone_args;
 
 int chmaddr_confirm_caps_dropped(void);
 int chmaddr_can_drop_caps(void);
 int chmaddr_verify_string_format(const char *str_mac);
-int chmaddr_convert_hex_to_byte(const char *strmac, uint8_t *mac);
+int chmaddr_convert_hex_decode(const char *strmac, uint8_t *mac);
 int chmaddr_finish_what_we_started(int argc, const char *argv[]);
 uid_t chmaddr_get_uid(const char *id, int *err);
 int chmaddr_drop_unneeded_caps(void);

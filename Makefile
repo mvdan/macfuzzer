@@ -20,5 +20,5 @@ test: clean native
 	cd tests && ant debug install && \
 	  adb logcat -c && \
 	  ant test && \
-	  adb logcat -C
+	  adb logcat -C -t 1000
 

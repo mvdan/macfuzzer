@@ -32,6 +32,7 @@
 #include <errno.h>
 
 #include "native_ioctller.h"
+#include "chmacaddr.h"
 
 jbyteArray
 Java_un_ique_chmacaddroid_NativeIOCtller_getCurrentMacAddr(JNIEnv* env,
@@ -102,10 +103,14 @@ Java_un_ique_chmacaddroid_NativeIOCtller_getCurrentMacAddrError(JNIEnv* env,
 }
 
 /** Set the MAC address *mac* of network interface *iface*.
+  * Ensure *mac* is the correct length. We will segfault if it's not.
   * Return -1 if we fail while opening an inet datagram socket.
   * Return -2 if we fail while getting or setting the interface's MAC
   *    address.
   * Return 0 on success.
+  *
+  * Note, errno is reset to 0 at the beginning of this function. You
+  * may use it on failure.
   */
 int nativeioc_set_mac_addr(const char *iface, const uint8_t *mac) {
     struct ifreq dev;
@@ -121,7 +126,7 @@ int nativeioc_set_mac_addr(const char *iface, const uint8_t *mac) {
         close(sock);
         return -2;
     }
-    for (i=0; i<6; i++) {
+    for (i=0; i<mac_byte_length; i++) {
         dev.ifr_hwaddr.sa_data[i] = mac[i];
     }
     if (ioctl(sock, SIOCSIFHWADDR, &dev) < 0) {
