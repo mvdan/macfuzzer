@@ -62,19 +62,20 @@ public class MainActivity extends Activity {
         ((TextView) findViewById(id)).setText(str);
     }
 
-    private int getInputByte(int id) {
+    private byte getInputByte(int id) {
         String str = getInputStr(id);
 
-        int result;
+        int i;
         try {
-            result = Integer.parseInt(str, 16);
+            i = Integer.parseInt(str, 16);
         } catch (NumberFormatException e) {
-            return -1;
+            return 0;
         }
-        if (result < 0 || result > 255) {
-            return -1;
+        if (i < 0 || i > 255) {
+            return 0;
         }
-        return result;
+        return (byte)i;
+
     }
 
     private void setInputByte(int id, int b) {
@@ -83,24 +84,21 @@ public class MainActivity extends Activity {
         setInputStr(id, str);
     }
 
-    private String getInputMac() {
-        int b1 = getInputByte(R.id.edittext_mac_byte1);
-        int b2 = getInputByte(R.id.edittext_mac_byte2);
-        int b3 = getInputByte(R.id.edittext_mac_byte3);
-        int b4 = getInputByte(R.id.edittext_mac_byte4);
-        int b5 = getInputByte(R.id.edittext_mac_byte5);
-        int b6 = getInputByte(R.id.edittext_mac_byte6);
+    private byte[] getInputBytes() {
+        byte b1 = getInputByte(R.id.edittext_mac_byte1);
+        byte b2 = getInputByte(R.id.edittext_mac_byte2);
+        byte b3 = getInputByte(R.id.edittext_mac_byte3);
+        byte b4 = getInputByte(R.id.edittext_mac_byte4);
+        byte b5 = getInputByte(R.id.edittext_mac_byte5);
+        byte b6 = getInputByte(R.id.edittext_mac_byte6);
 
         if (b1 < 0 || b2 < 0 || b3 < 0 || b4 < 0 || b5 < 0 || b6 < 0) {
             return null;
         }
-
-        return String.format(Locale.ENGLISH,
-                "%02X:%02X:%02X:%02X:%02X:%02X", b1, b2, b3, b4, b5, b6)
-            .toUpperCase(Locale.ENGLISH);
+        return new byte[]{b1, b2, b3, b4, b5, b6};
     }
 
-    private void setInputMac(byte[] bytes) {
+    private void setInputBytes(byte[] bytes) {
         if (bytes.length != 6) {
             return;
         }
@@ -113,26 +111,27 @@ public class MainActivity extends Activity {
     }
 
     public void macApply(View view) {
-        String addr = getInputMac();
-        if (addr == null) {
+        byte[] bytes = getInputBytes();
+        if (bytes == null) {
             return;
         }
         String uid = Integer.toString(ctller.getCurrentUID());
         FileStuff fs = new FileStuff(this);
         File exe = fs.copyBinaryFile();
 
-        ProcessResult pr = fs.runBlob(dev, addr, uid);
+        Layer2Address addr = new Layer2Address(bytes);
+        ProcessResult pr = fs.runBlob(dev, addr.toString(), uid);
         refresh();
     }
 
     public void macReset(View view) {
-        setInputMac(ctller.getCurrentMacAddr());
+        setInputBytes(ctller.getCurrentMacAddr());
     }
 
     public void macRand(View view) {
         Layer2Address randAddr = new Layer2Address();
         randAddr.randomize();
-        setInputMac(randAddr.getBytes());
+        setInputBytes(randAddr.getBytes());
     }
 
     public void macClear(View view) {
