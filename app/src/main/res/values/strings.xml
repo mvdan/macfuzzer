@@ -5,9 +5,6 @@
     <string name="main_what_i_can_do">I can perform a few actions for you:</string>
     <string name="main_action_1">Change the MAC address to one you provide</string>
     <string name="main_action_2">Change the MAC address to one selected at random</string>
-    <string name="main_what_i_want_to_do">In the future I want to be able to:</string>
-    <string name="main_future_action_1">Be able to change the MAC address whenever you connect to a new Wireless network</string>
-    <string name="main_future_action_2">Change the MAC address so it appears to be made by a specific manufacturer</string>
 
     <string name="randommac_app_name">Randomize MAC Address</string>
     <string name="randommac_header">Compare the current MAC address and the proposed new MAC address."</string>
@@ -39,7 +36,6 @@
     <string name="notice_restart">We\'ve malfunctioned. If this error continues, please report it.</string>
     <string name="change_failed">MAC Address Change Failed! :(</string>
     <string name="change_success">MAC Address Change Successful! :)</string>
-    <string name="possible_reason">Possible reason:</string>
     <string name="current">Current</string>
     <string name="expected">Expected</string>
     <string name="colon"> : </string>
