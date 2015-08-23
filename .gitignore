@@ -44,3 +44,4 @@ out
 
 # Jars and NDK output
 libs/
+obj/
