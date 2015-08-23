@@ -1,42 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">MAC Fuzzer</string>
-    <string name="main_header">Welcome to ChMacAddroid. Your friendly MAC address changer.</string>
-    <string name="main_what_i_can_do">I can perform a few actions for you:</string>
-    <string name="main_action_1">Change the MAC address to one you provide</string>
-    <string name="main_action_2">Change the MAC address to one selected at random</string>
 
-    <string name="randommac_app_name">Randomize MAC Address</string>
-    <string name="randommac_header">Compare the current MAC address and the proposed new MAC address."</string>
-    <string name="randommac_randomize">I don\'t like this one. Create another MAC Address</string>
-    <string name="manualmac_app_name">Manually Set MAC Address</string>
-    <string name="manualmac_header">Set the MAC address you want."</string>
-    <string name="manualmac_notice_invalid_title">Invalid Entry</string>
-    <string name="manualmac_notice_not_hex_1">The first entry is not a hexadecimal number. Please correct this.</string>
-    <string name="manualmac_notice_not_hex_2">The second entry is not a hexadecimal number. Please correct this.</string>
-    <string name="manualmac_notice_not_hex_3">The third entry is not a hexadecimal number. Please correct this.</string>
-    <string name="manualmac_notice_not_hex_4">The fourth entry is not a hexadecimal number. Please correct this.</string>
-    <string name="manualmac_notice_not_hex_5">The fifth entry is not a hexadecimal number. Please correct this.</string>
-    <string name="manualmac_notice_not_hex_6">The sixth entry is not a hexadecimal number. Please correct this.</string>
-    <string name="manualmac_notice_2_chars_1">The first entry must contain two hexadecimal characters. Please correct this.</string>
-    <string name="manualmac_notice_2_chars_2">The second entry must contain two hexadecimal characters. Please correct this.</string>
-    <string name="manualmac_notice_2_chars_3">The third entry must contain two hexadecimal characters. Please correct this.</string>
-    <string name="manualmac_notice_2_chars_4">The fourth entry must contain two hexadecimal characters. Please correct this.</string>
-    <string name="manualmac_notice_2_chars_5">The fifth entry must contain two hexadecimal characters. Please correct this.</string>
-    <string name="manualmac_notice_2_chars_6">The sixth entry must contain two hexadecimal characters. Please correct this.</string>
-
-    <string name="current_mac">Current MAC address: </string>
-    <string name="next_mac">Proposed new MAC address: </string>
-    <string name="button_apply">Use this new MAC address</string>
-    <string name="button_cancel">Cancel</string>
-    <string name="button_okay">Okay</string>
-    <string name="button_close_app">Close App</string>
-    <string name="button_continue">Continue.</string>
-    <string name="notice_restart_title">Please restart this app</string>
-    <string name="notice_restart">We\'ve malfunctioned. If this error continues, please report it.</string>
-    <string name="change_failed">MAC Address Change Failed! :(</string>
-    <string name="change_success">MAC Address Change Successful! :)</string>
-    <string name="current">Current</string>
-    <string name="expected">Expected</string>
-    <string name="colon"> : </string>
+    <string name="button_mac_apply">Apply</string>
+    <string name="button_mac_rand">Randomize</string>
+    <string name="button_mac_reset">Reset</string>
+    <string name="button_mac_clear">Clear</string>
 </resources>
