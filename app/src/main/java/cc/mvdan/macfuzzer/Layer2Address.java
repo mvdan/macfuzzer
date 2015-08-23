@@ -45,15 +45,12 @@ public class Layer2Address {
     }
 
     public void randomize() {
+        SecureRandom sr = new SecureRandom();
+        sr.nextBytes(bytes);
+
         // We need to respect U/L and Uni/Multicast flag bits
         // See MACADDRESSING and [0] for details.
         // [0] http://standards.ieee.org/develop/regauth/tut/macgrp.pdf
-
-        {
-            // Let's generate some random bytes
-            SecureRandom sr = new SecureRandom();
-            sr.nextBytes(bytes);
-        }
 
         // Always pretend to be the burned-in address
         bytes[0] &= ~2;

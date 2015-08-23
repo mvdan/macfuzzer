@@ -80,7 +80,8 @@ public class MainActivity extends Activity {
     }
 
     private void setInputByte(int id, int b) {
-        String str = String.format(Locale.ENGLISH, "%02X", b).toUpperCase();
+        String str = String.format(Locale.ENGLISH,
+                "%02X", b).toUpperCase(Locale.ENGLISH);
 
         setInputStr(id, str);
     }
