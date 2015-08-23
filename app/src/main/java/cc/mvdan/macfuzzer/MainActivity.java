@@ -36,6 +36,7 @@ public class MainActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        PRNGFixes.apply();
         setContentView(R.layout.main);
 
         ctller = new NativeIOCtller(dev);
