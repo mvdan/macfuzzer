@@ -50,8 +50,7 @@ public class Main extends Activity
         NativeIOCtller ctller = new NativeIOCtller(newNet);
         newNet.setAddress(ctller.getCurrentMacAddr());
         String addr = newNet.formatAddress();
-        TextView macField = (TextView)
-            findViewById(R.id.main_macaddress);
+        TextView macField = (TextView) findViewById(R.id.main_macaddress);
         if (macField != null) {
             macField.setText(addr);
         }

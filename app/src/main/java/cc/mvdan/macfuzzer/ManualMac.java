@@ -37,6 +37,11 @@ public class ManualMac extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.manualmac);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
         mNotice = new UserNotice(this);
 
         Layer2Address newNet = new Layer2Address();
@@ -45,8 +50,7 @@ public class ManualMac extends Activity {
         NativeIOCtller ctller = new NativeIOCtller(newNet);
         newNet.setAddress(ctller.getCurrentMacAddr());
         String addr = newNet.formatAddress();
-        TextView macField = (TextView)
-            findViewById(R.id.manualmac_macaddress);
+        TextView macField = (TextView) findViewById(R.id.manualmac_macaddress);
         if (macField != null) {
             macField.setText(addr);
         }
@@ -55,8 +59,7 @@ public class ManualMac extends Activity {
     public String getManualMac() {
         String byte1, byte2, byte3, byte4, byte5, byte6;
 
-        TextView macField = (TextView)
-            findViewById(R.id.manualmac_byte1);
+        TextView macField = (TextView) findViewById(R.id.manualmac_byte1);
         if (macField != null) {
             byte1 = macField.getText().toString();
         } else {
@@ -76,8 +79,7 @@ public class ManualMac extends Activity {
             return "";
         }
 
-        macField = (TextView)
-            findViewById(R.id.manualmac_byte2);
+        macField = (TextView) findViewById(R.id.manualmac_byte2);
         if (macField != null) {
             byte2 = macField.getText().toString();
         } else {
@@ -97,8 +99,7 @@ public class ManualMac extends Activity {
             return "";
         }
 
-        macField = (TextView)
-            findViewById(R.id.manualmac_byte3);
+        macField = (TextView) findViewById(R.id.manualmac_byte3);
         if (macField != null) {
             byte3 = macField.getText().toString();
         } else {
@@ -118,8 +119,7 @@ public class ManualMac extends Activity {
             return "";
         }
 
-        macField = (TextView)
-            findViewById(R.id.manualmac_byte4);
+        macField = (TextView) findViewById(R.id.manualmac_byte4);
         if (macField != null) {
             byte4 = macField.getText().toString();
         } else {
@@ -139,8 +139,7 @@ public class ManualMac extends Activity {
             return "";
         }
 
-        macField = (TextView)
-            findViewById(R.id.manualmac_byte5);
+        macField = (TextView) findViewById(R.id.manualmac_byte5);
         if (macField != null) {
             byte5 = macField.getText().toString();
         } else {
@@ -160,8 +159,7 @@ public class ManualMac extends Activity {
             return "";
         }
 
-        macField = (TextView)
-            findViewById(R.id.manualmac_byte6);
+        macField = (TextView) findViewById(R.id.manualmac_byte6);
         if (macField != null) {
             byte6 = macField.getText().toString();
         } else {
@@ -231,8 +229,7 @@ public class ManualMac extends Activity {
                             "do_nothing", "failedChange");
 
         }
-        TextView macField = (TextView)
-            findViewById(R.id.manualmac_macaddress);
+        TextView macField = (TextView) findViewById(R.id.manualmac_macaddress);
         if (macField != null) {
             macField.setText(mNewNet.formatAddress());
         }

@@ -37,6 +37,11 @@ public class RandomMac extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.randommac);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
         mNotice = new UserNotice(this);
 
         Layer2Address newNet = new Layer2Address();
@@ -44,15 +49,13 @@ public class RandomMac extends Activity {
         NativeIOCtller ctller = new NativeIOCtller(newNet);
         newNet.setAddress(ctller.getCurrentMacAddr());
         String addr = newNet.formatAddress();
-        TextView macField = (TextView)
-            findViewById(R.id.randommac_macaddress);
+        TextView macField = (TextView) findViewById(R.id.randommac_macaddress);
         if (macField != null) {
             macField.setText(addr);
         }
         byte[] nextAddr = newNet.generateNewAddress();
         mNewNet = new Layer2Address(nextAddr, dev);
-        TextView nextMacField = (TextView)
-            findViewById(R.id.randommac_nextmacaddress);
+        TextView nextMacField = (TextView) findViewById(R.id.randommac_nextmacaddress);
         if (nextMacField != null) {
             nextMacField.setText(mNewNet.formatAddress());
         }
@@ -66,8 +69,7 @@ public class RandomMac extends Activity {
     public void showNewAddress(View view) {
         byte[] nextAddr = mNewNet.generateNewAddress();
         mNewNet = new Layer2Address(nextAddr, dev);
-        TextView nextMacField = (TextView)
-            findViewById(R.id.randommac_nextmacaddress);
+        TextView nextMacField = (TextView) findViewById(R.id.randommac_nextmacaddress);
         if (nextMacField != null) {
             nextMacField.setText(mNewNet.formatAddress());
         }
@@ -107,8 +109,7 @@ public class RandomMac extends Activity {
                             R.string.button_okay, 0, "do_nothing",
                             "do_nothing", "failedChange");
         }
-        TextView macField = (TextView)
-            findViewById(R.id.randommac_macaddress);
+        TextView macField = (TextView) findViewById(R.id.randommac_macaddress);
         if (macField != null) {
             macField.setText(newL2A.formatAddress());
         }
