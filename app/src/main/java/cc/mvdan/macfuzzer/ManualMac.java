@@ -26,6 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.util.Locale;
 
 public class ManualMac extends Activity {
     // Let's hardcode wlan0, for now
@@ -51,138 +52,55 @@ public class ManualMac extends Activity {
         newNet.setAddress(ctller.getCurrentMacAddr());
         String addr = newNet.formatAddress();
         TextView macField = (TextView) findViewById(R.id.manualmac_macaddress);
-        if (macField != null) {
-            macField.setText(addr);
-        }
+        macField.setText(addr);
     }
 
-    public String getManualMac() {
-        String byte1, byte2, byte3, byte4, byte5, byte6;
+    private int getFieldByte(int id) {
+        int result;
+        TextView tv = (TextView) findViewById(id);
 
-        TextView macField = (TextView) findViewById(R.id.manualmac_byte1);
-        if (macField != null) {
-            byte1 = macField.getText().toString();
-        } else {
-            mNotice.showSuggestRestartAlert("byte1NoField");
-            return "";
-        }
+        String str = tv.getText().toString();
+
         try {
-            Integer.parseInt(byte1, 16);
+            result = Integer.parseInt(str, 16);
         } catch (NumberFormatException e) {
-            mNotice.showInvalidEntryAlert(R.string.manualmac_notice_not_hex_1,
-                                  "byte1NotHex");
-            return "";
+            return -1;
         }
-        if (byte1.length() != 2) {
-            mNotice.showInvalidEntryAlert(R.string.manualmac_notice_2_chars_1,
-                                  "byte1Not2");
-            return "";
+        if (result < 0 || result > 255) {
+            return -1;
+        }
+        return result;
+    }
+
+    private String getManualMac() {
+
+        int byte1 = getFieldByte(R.id.manualmac_byte1);
+        if (byte1 == -1) {
+            return null;
+        }
+        int byte2 = getFieldByte(R.id.manualmac_byte2);
+        if (byte2 == -1) {
+            return null;
+        }
+        int byte3 = getFieldByte(R.id.manualmac_byte3);
+        if (byte3 == -1) {
+            return null;
+        }
+        int byte4 = getFieldByte(R.id.manualmac_byte4);
+        if (byte4 == -1) {
+            return null;
+        }
+        int byte5 = getFieldByte(R.id.manualmac_byte5);
+        if (byte5 == -1) {
+            return null;
+        }
+        int byte6 = getFieldByte(R.id.manualmac_byte6);
+        if (byte6 == -1) {
+            return null;
         }
 
-        macField = (TextView) findViewById(R.id.manualmac_byte2);
-        if (macField != null) {
-            byte2 = macField.getText().toString();
-        } else {
-            mNotice.showSuggestRestartAlert("byte2NoField");
-            return "";
-        }
-        try {
-            Integer.parseInt(byte1, 16);
-        } catch (NumberFormatException e) {
-            mNotice.showInvalidEntryAlert(R.string.manualmac_notice_not_hex_2,
-                                  "byte2NotHex");
-            return "";
-        }
-        if (byte2.length() != 2) {
-            mNotice.showInvalidEntryAlert(R.string.manualmac_notice_2_chars_2,
-                                  "byte2Not2");
-            return "";
-        }
-
-        macField = (TextView) findViewById(R.id.manualmac_byte3);
-        if (macField != null) {
-            byte3 = macField.getText().toString();
-        } else {
-            mNotice.showSuggestRestartAlert("byte3NoField");
-            return "";
-        }
-        try {
-            Integer.parseInt(byte2, 16);
-        } catch (NumberFormatException e) {
-            mNotice.showInvalidEntryAlert(R.string.manualmac_notice_not_hex_3,
-                                  "byte3NotHex");
-            return "";
-        }
-        if (byte3.length() != 2) {
-            mNotice.showInvalidEntryAlert(R.string.manualmac_notice_2_chars_3,
-                                  "byte3Not2");
-            return "";
-        }
-
-        macField = (TextView) findViewById(R.id.manualmac_byte4);
-        if (macField != null) {
-            byte4 = macField.getText().toString();
-        } else {
-            mNotice.showSuggestRestartAlert("byte4NoField");
-            return "";
-        }
-        try {
-            Integer.parseInt(byte3, 16);
-        } catch (NumberFormatException e) {
-            mNotice.showInvalidEntryAlert(R.string.manualmac_notice_not_hex_4,
-                                  "byte4NotHex");
-            return "";
-        }
-        if (byte4.length() != 2) {
-            mNotice.showInvalidEntryAlert(R.string.manualmac_notice_2_chars_4,
-                                  "byte4Not2");
-            return "";
-        }
-
-        macField = (TextView) findViewById(R.id.manualmac_byte5);
-        if (macField != null) {
-            byte5 = macField.getText().toString();
-        } else {
-            mNotice.showSuggestRestartAlert("byte5NoField");
-            return "";
-        }
-        try {
-            Integer.parseInt(byte4, 16);
-        } catch (NumberFormatException e) {
-            mNotice.showInvalidEntryAlert(R.string.manualmac_notice_not_hex_5,
-                                  "byte5NotHex");
-            return "";
-        }
-        if (byte5.length() != 2) {
-            mNotice.showInvalidEntryAlert(R.string.manualmac_notice_2_chars_5,
-                                  "byte5Not2");
-            return "";
-        }
-
-        macField = (TextView) findViewById(R.id.manualmac_byte6);
-        if (macField != null) {
-            byte6 = macField.getText().toString();
-        } else {
-            mNotice.showSuggestRestartAlert("byte6NoField");
-            return "";
-        }
-        try {
-            Integer.parseInt(byte6, 16);
-        } catch (NumberFormatException e) {
-            mNotice.showInvalidEntryAlert(R.string.manualmac_notice_not_hex_6,
-                                  "byte6NotHex");
-            return "";
-        }
-        if (byte6.length() != 2) {
-            mNotice.showInvalidEntryAlert(R.string.manualmac_notice_2_chars_6,
-                                  "byte6Not2");
-            return "";
-        }
-
-        String mac = byte1.toLowerCase() + ":" + byte2.toLowerCase();
-        mac += ":" + byte3.toLowerCase() + ":" + byte4.toLowerCase();
-        mac += ":" + byte5.toLowerCase() + ":" + byte6.toLowerCase();
-        return mac;
+        return String.format(Locale.ENGLISH, "%02X:%02X:%02X:%02X:%02X:%02X",
+                byte1, byte2, byte3, byte4, byte5, byte6);
     }
 
 
@@ -193,8 +111,7 @@ public class ManualMac extends Activity {
 
     public void applyNewAddress(View view) {
         String addr = getManualMac();
-        if (addr == "") {
-            /* We already reported the error */
+        if (addr == null) {
             return;
         }
         NativeIOCtller ctller = new NativeIOCtller(mNewNet);
@@ -230,8 +147,6 @@ public class ManualMac extends Activity {
 
         }
         TextView macField = (TextView) findViewById(R.id.manualmac_macaddress);
-        if (macField != null) {
-            macField.setText(mNewNet.formatAddress());
-        }
+        macField.setText(mNewNet.formatAddress());
     }
 }

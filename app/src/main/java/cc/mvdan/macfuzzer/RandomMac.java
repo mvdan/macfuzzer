@@ -50,9 +50,7 @@ public class RandomMac extends Activity {
         newNet.setAddress(ctller.getCurrentMacAddr());
         String addr = newNet.formatAddress();
         TextView macField = (TextView) findViewById(R.id.randommac_macaddress);
-        if (macField != null) {
-            macField.setText(addr);
-        }
+        macField.setText(addr);
         byte[] nextAddr = newNet.generateNewAddress();
         mNewNet = new Layer2Address(nextAddr, dev);
         TextView nextMacField = (TextView) findViewById(R.id.randommac_nextmacaddress);
@@ -110,8 +108,6 @@ public class RandomMac extends Activity {
                             "do_nothing", "failedChange");
         }
         TextView macField = (TextView) findViewById(R.id.randommac_macaddress);
-        if (macField != null) {
-            macField.setText(newL2A.formatAddress());
-        }
+        macField.setText(newL2A.formatAddress());
     }
 }

@@ -36,6 +36,8 @@
             android:id="@+id/manualmac_byte1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:digits="0123456789ABCDEF"
+            android:inputType="textCapCharacters"
             android:maxLength="2"
             />
         <TextView
@@ -48,6 +50,8 @@
             android:id="@+id/manualmac_byte2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:digits="0123456789ABCDEF"
+            android:inputType="textCapCharacters"
             android:maxLength="2"
             />
         <TextView
@@ -60,6 +64,8 @@
             android:id="@+id/manualmac_byte3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:digits="0123456789ABCDEF"
+            android:inputType="textCapCharacters"
             android:maxLength="2"
             />
         <TextView
@@ -72,6 +78,8 @@
             android:id="@+id/manualmac_byte4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:digits="0123456789ABCDEF"
+            android:inputType="textCapCharacters"
             android:maxLength="2"
             />
         <TextView
@@ -84,6 +92,8 @@
             android:id="@+id/manualmac_byte5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:digits="0123456789ABCDEF"
+            android:inputType="textCapCharacters"
             android:maxLength="2"
             />
         <TextView
@@ -96,6 +106,8 @@
             android:id="@+id/manualmac_byte6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:digits="0123456789ABCDEF"
+            android:inputType="textCapCharacters"
             android:maxLength="2"
             />
     </LinearLayout>

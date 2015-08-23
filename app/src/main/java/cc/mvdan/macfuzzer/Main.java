@@ -49,9 +49,7 @@ public class Main extends Activity {
         newNet.setAddress(ctller.getCurrentMacAddr());
         String addr = newNet.formatAddress();
         TextView macField = (TextView) findViewById(R.id.main_macaddress);
-        if (macField != null) {
-            macField.setText(addr);
-        }
+        macField.setText(addr);
     }
 
     public void callManualMac(View view) {
