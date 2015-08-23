@@ -101,7 +101,7 @@ test_convert_hex_to_byte(void *data)
 end:
     if (hexmac)
         free(hexmac);
-}    
+}
 
 void
 test_get_uid(void *data)
@@ -142,7 +142,7 @@ fork_and_set_cap_with_res(uint32_t eff)
     int status;
     struct __user_cap_header_struct hdr;
     struct __user_cap_data_struct data, have_data;
-    
+
     hdr.version = _LINUX_CAPABILITY_VERSION;
     hdr.pid = 0;
 
@@ -202,7 +202,7 @@ test_get_group_id(void *data)
 end:
     return;
 }
-  
+
 
 void
 test_get_users_groups(void *data)
@@ -241,7 +241,7 @@ fork_and_switch_user_with_res(uid_t uid, uid_t ruid, uid_t euid, uid_t suid, int
         }
         exit(chmaddr_switch_user(uid));
     }
- 
+
     int status;
     pid_t rpid = waitpid(pid, &status, 0);
     if (rpid == pid) {
@@ -250,7 +250,7 @@ fork_and_switch_user_with_res(uid_t uid, uid_t ruid, uid_t euid, uid_t suid, int
     }
     return -3;
 }
- 
+
 void
 test_switch_user(void *data)
 {
@@ -263,7 +263,7 @@ test_switch_user(void *data)
     tt_int_op(fork_and_switch_user_with_res(313375, 0, 0, 0, 1), ==, 0);
     tt_int_op(fork_and_switch_user_with_res(313375, 313375, 0, 0, 1), ==, 0);
     tt_int_op(fork_and_switch_user_with_res(-1, 0, 0, 0, 1), ==, 255);
-    
+
 end:
     return;
 }
@@ -299,7 +299,7 @@ test_finish_what_we_started(void *data)
 end:
     return;
 }
-    
+
 
 struct testcase_t tests[] = {
         { "string_format", test_string_format, },
