@@ -10,11 +10,6 @@
         android:layout_height="wrap_content"
         android:text="@string/manualmac_header"
         />
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/blank"
-        />
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:orientation="horizontal"
         android:layout_width="wrap_content"
@@ -30,14 +25,8 @@
             android:id="@+id/manualmac_macaddress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/blank"
             />
     </LinearLayout>
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/blank"
-        />
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:orientation="horizontal"
         android:layout_width="wrap_content"
@@ -48,7 +37,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:maxLength="2"
-            android:text="@string/blank"
             />
         <TextView
             android:id="@+id/manualmac_colon1"
@@ -61,7 +49,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:maxLength="2"
-            android:text="@string/blank"
             />
         <TextView
             android:id="@+id/manualmac_colon2"
@@ -74,7 +61,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:maxLength="2"
-            android:text="@string/blank"
             />
         <TextView
             android:id="@+id/manualmac_colon3"
@@ -87,7 +73,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:maxLength="2"
-            android:text="@string/blank"
             />
         <TextView
             android:id="@+id/manualmac_colon4"
@@ -100,7 +85,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:maxLength="2"
-            android:text="@string/blank"
             />
         <TextView
             android:id="@+id/manualmac_colon5"
@@ -113,25 +97,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:maxLength="2"
-            android:text="@string/blank"
             />
     </LinearLayout>
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/blank"
-        />
     <Button
         android:id="@+id/manualmac_apply_button"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="@string/button_apply"
         android:onClick="applyNewAddress"
-        />
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/blank"
         />
     <Button
         android:id="@+id/manualmac_cancel_button"

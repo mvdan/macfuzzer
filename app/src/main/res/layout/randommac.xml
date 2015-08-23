@@ -10,11 +10,6 @@
         android:layout_height="wrap_content"
         android:text="@string/randommac_header"
         />
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/blank"
-        />
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:orientation="horizontal"
         android:layout_width="wrap_content"
@@ -30,7 +25,6 @@
             android:id="@+id/randommac_macaddress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/blank"
             />
     </LinearLayout>
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -48,14 +42,8 @@
             android:id="@+id/randommac_nextmacaddress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/blank"
             />
     </LinearLayout>
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/blank"
-        />
     <Button
         android:id="@+id/randommac_randomize_button"
         android:layout_width="fill_parent"
@@ -69,11 +57,6 @@
         android:layout_height="wrap_content"
         android:text="@string/button_apply"
         android:onClick="applyNewAddress"
-        />
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/blank"
         />
     <Button
         android:id="@+id/randommac_cancel_button"
