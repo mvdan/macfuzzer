@@ -21,17 +21,10 @@ package cc.mvdan.macfuzzer;
 
 import android.app.Activity;
 import android.os.Bundle;
-import cc.mvdan.macfuzzer.Layer2Address;
-import cc.mvdan.macfuzzer.NativeIOCtller;
-import cc.mvdan.macfuzzer.FileStuff;
-import cc.mvdan.macfuzzer.UserNotice;
-import cc.mvdan.macfuzzer.ProcessResult;
-import android.widget.TextView;
 import android.view.View;
-import android.content.Intent;
+import android.widget.TextView;
 import android.widget.Toast;
-import java.io.IOException;
-import java.io.FileNotFoundException;
+
 import java.io.File;
 
 public class RandomMac extends Activity {

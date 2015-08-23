@@ -20,17 +20,14 @@
 package cc.mvdan.macfuzzer;
 
 import android.app.Activity;
-import java.io.File;
-import android.content.res.Resources;
-import java.io.InputStream;
-import java.io.BufferedInputStream;
-import java.io.FileOutputStream;
 import android.content.Context;
-import java.io.IOException;
+
+import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
-import java.lang.Process;
-import java.lang.ProcessBuilder;
-import cc.mvdan.macfuzzer.ProcessResult;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class FileStuff
 {

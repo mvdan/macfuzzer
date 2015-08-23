@@ -20,13 +20,11 @@
 package cc.mvdan.macfuzzer;
 
 import android.app.Activity;
-import android.os.Bundle;
-import cc.mvdan.macfuzzer.Layer2Address;
-import cc.mvdan.macfuzzer.NativeIOCtller;
-import cc.mvdan.macfuzzer.FileStuff;
-import android.widget.TextView;
-import android.view.View;
 import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.TextView;
+
 import java.io.File;
 
 public class Main extends Activity

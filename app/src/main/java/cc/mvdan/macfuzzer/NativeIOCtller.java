@@ -19,8 +19,6 @@
 
 package cc.mvdan.macfuzzer;
 
-import cc.mvdan.macfuzzer.Layer2Address;
-
 public class NativeIOCtller {
     private String mInterface;
     private byte[] mAddr;
