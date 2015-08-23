@@ -92,9 +92,6 @@ public class MainActivity extends Activity {
         byte b5 = getInputByte(R.id.edittext_mac_byte5);
         byte b6 = getInputByte(R.id.edittext_mac_byte6);
 
-        if (b1 < 0 || b2 < 0 || b3 < 0 || b4 < 0 || b5 < 0 || b6 < 0) {
-            return null;
-        }
         return new byte[]{b1, b2, b3, b4, b5, b6};
     }
 
