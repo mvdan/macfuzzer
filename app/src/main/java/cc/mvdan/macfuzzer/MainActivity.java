@@ -51,7 +51,7 @@ public class MainActivity extends Activity {
 
     private void refresh() {
         addr.setBytes(ctller.getCurrentMacAddr());
-        TextView macField = (TextView) findViewById(R.id.textview_current_mac);
+        TextView macField = (TextView) findViewById(R.id.textview_current_mac_addr);
         macField.setText(addr.toString());
     }
 

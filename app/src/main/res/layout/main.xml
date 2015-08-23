@@ -3,17 +3,27 @@
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:gravity="center"
+    android:gravity="center_horizontal"
+    android:padding="40dp"
     >
     <TextView
-        android:id="@+id/textview_current_mac"
+        android:id="@+id/textview_current_mac_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="@string/current_mac_header"
+        android:textSize="18sp"
+        />
+    <TextView
+        android:id="@+id/textview_current_mac_addr"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
         />
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:padding="20dp"
         >
         <EditText
             android:id="@+id/edittext_mac_byte1"

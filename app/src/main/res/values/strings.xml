@@ -2,6 +2,8 @@
 <resources>
     <string name="app_name">MAC Fuzzer</string>
 
+    <string name="current_mac_header">Current address:</string>
+
     <string name="button_mac_apply">Apply</string>
     <string name="button_mac_rand">Randomize</string>
     <string name="button_mac_reset">Reset</string>
