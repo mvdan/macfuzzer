@@ -98,9 +98,6 @@ public class MainActivity extends Activity {
     }
 
     private void setInputBytes(byte[] bytes) {
-        if (bytes.length != 6) {
-            return;
-        }
         setInputByte(R.id.edittext_mac_byte1, bytes[0]);
         setInputByte(R.id.edittext_mac_byte2, bytes[1]);
         setInputByte(R.id.edittext_mac_byte3, bytes[2]);
@@ -111,9 +108,6 @@ public class MainActivity extends Activity {
 
     public void macApply(View view) {
         byte[] bytes = getInputBytes();
-        if (bytes == null) {
-            return;
-        }
         String uid = Integer.toString(ctller.getCurrentUID());
         FileStuff fs = new FileStuff(this);
         File exe = fs.copyBinaryFile();
