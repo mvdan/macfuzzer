@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-      package="un.ique.chmacaddroid"
-      >
+    package="un.ique.chmacaddroid"
+    android:installLocation="auto"
+    >
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_SUPERUSER" />
 
     <application
         android:label="@string/main_app_name"
+        android:allowBackup="true"
         >
 
         <activity
@@ -23,18 +25,18 @@
         </activity>
 
         <activity android:name="ManualMac"
-                  android:label="@string/manualmac_app_name"
-                  android:parentActivityName=".Main"
-                  >
+            android:label="@string/manualmac_app_name"
+            android:parentActivityName=".Main"
+            >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".Main" />
         </activity>
 
         <activity android:name="RandomMac"
-                  android:label="@string/randommac_app_name"
-                  android:parentActivityName=".Main"
-                  >
+            android:label="@string/randommac_app_name"
+            android:parentActivityName=".Main"
+            >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".Main" />
