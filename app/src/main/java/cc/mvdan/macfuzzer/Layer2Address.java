@@ -26,9 +26,8 @@ public class Layer2Address {
     private byte[] mAddr;
 
     public Layer2Address(byte[] addr, String iface) {
-        mAddr = new byte[6];
-        mInterface = iface;
         mAddr = addr;
+        mInterface = iface;
     }
 
     public Layer2Address() {

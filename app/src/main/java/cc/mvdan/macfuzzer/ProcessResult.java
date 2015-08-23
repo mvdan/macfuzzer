@@ -19,8 +19,8 @@
 
 package cc.mvdan.macfuzzer;
 
-public class ProcessResult
-{
+public class ProcessResult {
+
     String out, err;
     int exitcode;
 

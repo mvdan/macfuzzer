@@ -27,22 +27,20 @@ import android.widget.TextView;
 
 import java.io.File;
 
-public class Main extends Activity
-{
+public class Main extends Activity {
+
     private static final int RANDOMMAC_RESULT = 0x1d01;
     private static final int MANUALMAC_RESULT = 0x1d02;
     public static final int RESULT_EXIT = RESULT_FIRST_USER  + 1;
 
     @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
     }
 
     @Override
-    public void onResume()
-    {
+    public void onResume() {
         super.onResume();
         Layer2Address newNet = new Layer2Address();
         // Let's hardcode wlan0, for now
@@ -56,21 +54,18 @@ public class Main extends Activity
         }
     }
 
-    public void callManualMac(View view)
-    {
+    public void callManualMac(View view) {
         Intent intent = new Intent(this, ManualMac.class);
         startActivityForResult(intent, RANDOMMAC_RESULT);
     }
 
-    public void callRandomMac(View view)
-    {
+    public void callRandomMac(View view) {
         Intent intent = new Intent(this, RandomMac.class);
         startActivityForResult(intent, MANUALMAC_RESULT);
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode,
-                                 Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_EXIT) {
             finish();
         }

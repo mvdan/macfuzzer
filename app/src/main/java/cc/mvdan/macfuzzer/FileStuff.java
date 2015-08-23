@@ -29,8 +29,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class FileStuff
-{
+public class FileStuff {
     private final String binaryName = "chmacaddr";
     private Activity mCurrAct = null;
     private String lastOut, lastErr;
