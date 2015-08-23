@@ -4,79 +4,78 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     >
-<TextView
-    android:id="@+id/main_header"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:text="@string/main_header"
-    />
-<TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="@string/blank"
-    />
-<TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="@string/blank"
-    />
-<TextView
-    android:id="@+id/main_what_i_can_do"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="@string/main_what_i_can_do"
-    />
-<TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="@string/blank"
-    />
-<Button
-    android:id="@+id/main_button_action_1"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:text="@string/main_action_1"
-    android:onClick="callManualMac"
-    />
-<TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="@string/blank"
-    />
-<Button
-    android:id="@+id/main_button_action_2"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:text="@string/main_action_2"
-    android:onClick="callRandomMac"
-    />
-<TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="@string/blank"
-    />
-<TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="@string/blank"
-    />
+    <TextView
+        android:id="@+id/main_header"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/main_header"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/blank"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/blank"
+        />
+    <TextView
+        android:id="@+id/main_what_i_can_do"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/main_what_i_can_do"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/blank"
+        />
+    <Button
+        android:id="@+id/main_button_action_1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/main_action_1"
+        android:onClick="callManualMac"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/blank"
+        />
+    <Button
+        android:id="@+id/main_button_action_2"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/main_action_2"
+        android:onClick="callRandomMac"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/blank"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/blank"
+        />
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:orientation="horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         >
-    <TextView
-        android:id="@+id/main_current_mac"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/current_mac"
-        />
-    <TextView
-        android:id="@+id/main_macaddress"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/blank"
-        />
+        <TextView
+            android:id="@+id/main_current_mac"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/current_mac"
+            />
+        <TextView
+            android:id="@+id/main_macaddress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/blank"
+            />
     </LinearLayout>
 </LinearLayout>
-

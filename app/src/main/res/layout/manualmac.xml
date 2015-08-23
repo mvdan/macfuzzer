@@ -132,7 +132,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="@string/blank"
-       />
+        />
     <Button
         android:id="@+id/manualmac_cancel_button"
         android:layout_width="fill_parent"
