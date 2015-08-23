@@ -1,22 +1,20 @@
 /*
- * ChMacAddroid - Android app that changes a network devices MAC address
  * Copyright (C) 2014 Matthew Finkel <Matthew.Finkel@gmail.com>
+ * Copyright 2015 Daniel Martí <mvdan@mvdan.cc>
  *
- * This file is part of ChMacAddroid
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 3
+ * of the License, or (at your option) any later version.
  *
- * ChMacAddroid is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * ChMacAddroid is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with ChMacAddroid, in the COPYING file.  If not, see
- * <http://www.gnu.org/licenses/>.
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
 #include <errno.h>
@@ -35,8 +33,8 @@
 #include "chmacaddr.h"
 
 jbyteArray
-Java_un_ique_chmacaddroid_NativeIOCtller_getCurrentMacAddr(JNIEnv* env,
-                                                           jobject thiz)
+Java_cc_mvdan_macfuzzer_NativeIOCtller_getCurrentMacAddr(JNIEnv* env,
+                                                         jobject thiz)
 {
     if (env == NULL || thiz == NULL) {
         return (*env)->NewByteArray(env, 6);
@@ -74,8 +72,8 @@ Java_un_ique_chmacaddroid_NativeIOCtller_getCurrentMacAddr(JNIEnv* env,
 }
 
 jstring
-Java_un_ique_chmacaddroid_NativeIOCtller_getCurrentMacAddrError(JNIEnv* env,
-                                                                jobject thiz)
+Java_cc_mvdan_macfuzzer_NativeIOCtller_getCurrentMacAddrError(JNIEnv* env,
+                                                              jobject thiz)
 {
     if (env == NULL || thiz == NULL) {
         return (*env)->NewByteArray(env, 6);
@@ -139,9 +137,9 @@ int nativeioc_set_mac_addr(const char *iface, const uint8_t *mac) {
 }
 
 jint
-Java_un_ique_chmacaddroid_NativeIOCtller_setMacAddr(JNIEnv* env,
-                                                    jobject thiz,
-                                                    jbyteArray mac)
+Java_cc_mvdan_macfuzzer_NativeIOCtller_setMacAddr(JNIEnv* env,
+                                                  jobject thiz,
+                                                  jbyteArray mac)
 {
     uint8_t new_mac[6];
 
@@ -171,9 +169,9 @@ Java_un_ique_chmacaddroid_NativeIOCtller_setMacAddr(JNIEnv* env,
 }
 
 jstring
-Java_un_ique_chmacaddroid_NativeIOCtller_getErrorString(JNIEnv* env,
-                                                        jobject thiz,
-                                                        jint errcode)
+Java_cc_mvdan_macfuzzer_NativeIOCtller_getErrorString(JNIEnv* env,
+                                                      jobject thiz,
+                                                      jint errcode)
 {
     char strerrmsg[40];
     snprintf(strerrmsg, 39, "%d: %s", (int)errcode, strerror((int)errcode));
@@ -181,8 +179,8 @@ Java_un_ique_chmacaddroid_NativeIOCtller_getErrorString(JNIEnv* env,
 }
 
 jint
-Java_un_ique_chmacaddroid_NativeIOCtller_getCurrentUID(JNIEnv* env,
-                                                       jobject thiz)
+Java_cc_mvdan_macfuzzer_NativeIOCtller_getCurrentUID(JNIEnv* env,
+                                                     jobject thiz)
 {
    return (jint)getuid();
 }

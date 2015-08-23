@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="main_app_name">ChMacAddroid</string>
+    <string name="app_name">MAC Fuzzer</string>
     <string name="main_header">Welcome to ChMacAddroid. Your friendly MAC address changer.</string>
     <string name="main_what_i_can_do">I can perform a few actions for you:</string>
     <string name="main_action_1">Change the MAC address to one you provide</string>

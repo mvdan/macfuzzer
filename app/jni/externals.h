@@ -1,5 +1,5 @@
-#ifndef _CHMACADDROID_EXTERNALS
-#define _CHMACADDROID_EXTERNALS
+#ifndef _MACFUZZER_EXTERNALS
+#define _MACFUZZER_EXTERNALS
 
 /* Copied from bionic source repo because ndk is lacking
  * some important constants. */
@@ -36,4 +36,4 @@
 #endif
 
 
-#endif //_CHMACADDROID_EXTERNALS
+#endif //_MACFUZZER_EXTERNALS
