@@ -33,27 +33,11 @@ public class Main extends Activity
     private static final int MANUALMAC_RESULT = 0x1d02;
     public static final int RESULT_EXIT = RESULT_FIRST_USER  + 1;
 
-    /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        Layer2Address newNet = new Layer2Address();
-        // Let's hardcode wlan0, for now
-        newNet.setInterfaceName("wlan0");
-        NativeIOCtller ctller = new NativeIOCtller(newNet);
-        newNet.setAddress(ctller.getCurrentMacAddr());
-        String addr = newNet.formatAddress();
-        TextView macField = (TextView)
-            findViewById(R.id.main_macaddress);
-        if (macField != null) {
-            macField.setText(addr);
-        }
-        /* TODO This can be removed. It's only here to make
-         * debugging easier. */
-        FileStuff fs = new FileStuff(this);
-        File exe = fs.copyBinaryFile();
     }
 
     @Override
