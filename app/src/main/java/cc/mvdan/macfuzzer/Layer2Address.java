@@ -20,63 +20,53 @@
 package cc.mvdan.macfuzzer;
 
 import java.security.SecureRandom;
+import java.util.Locale;
 
 public class Layer2Address {
-    private String mInterface;
-    private byte[] mAddr;
-
-    public Layer2Address(byte[] addr, String iface) {
-        mAddr = addr;
-        mInterface = iface;
-    }
+    private byte[] bytes;
 
     public Layer2Address() {
-        mAddr = new byte[6];
+        this.bytes = new byte[6];
     }
 
-    public void setInterfaceName(String iface) {
-        mInterface = iface;
+    public Layer2Address(byte[] bytes) {
+        setBytes(bytes);
     }
 
-    public void setAddress(byte[] addr) {
-        mAddr = addr;
+    public void setBytes(byte[] bytes) {
+        if (bytes.length != 6) {
+            return;
+        }
+        this.bytes = bytes;
     }
 
-    public String getInterfaceName() {
-        return mInterface;
+    public byte[] getBytes() {
+        return bytes;
     }
 
-    public byte[] getAddress() {
-        return mAddr;
-    }
-
-    public byte[] generateNewAddress() {
+    public void randomize() {
         // We need to respect U/L and Uni/Multicast flag bits
         // See MACADDRESSING and [0] for details.
         // [0] http://standards.ieee.org/develop/regauth/tut/macgrp.pdf
 
-        byte[] newAddr = new byte[6];
-
         {
             // Let's generate some random bytes
             SecureRandom sr = new SecureRandom();
-            sr.nextBytes(newAddr);
+            sr.nextBytes(bytes);
         }
 
         // Always pretend to be the burned-in address
-        newAddr[0] &= ~2;
+        bytes[0] &= ~2;
 
         // We only want to be a unicast interface
-        newAddr[0] &= ~1;
-
-        return newAddr;
+        bytes[0] &= ~1;
     }
 
-    public String formatAddress() {
-        String strAddr = "";
-        for (int i = 0; i < 6; i++) {
-            strAddr += String.format("%02x%s", mAddr[i], (i!=5?":":""));
-        }
-        return strAddr;
+    public String toString() {
+        return String.format(Locale.ENGLISH,
+                "%02X:%02X:%02X:%02X:%02X:%02X",
+                bytes[0], bytes[1], bytes[2],
+                bytes[3], bytes[4], bytes[5])
+            .toUpperCase(Locale.ENGLISH);
     }
 }

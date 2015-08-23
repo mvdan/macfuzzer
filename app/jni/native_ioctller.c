@@ -43,7 +43,7 @@ Java_cc_mvdan_macfuzzer_NativeIOCtller_getCurrentMacAddr(JNIEnv* env,
     jclass nioc = (*env)->GetObjectClass(env, thiz);
 
     jfieldID interface_field = (*env)->GetFieldID(env, nioc,
-            "mInterface", "Ljava/lang/String;");
+            "iface", "Ljava/lang/String;");
     if (interface_field == NULL) {
         return (*env)->NewByteArray(env, 6);
     }

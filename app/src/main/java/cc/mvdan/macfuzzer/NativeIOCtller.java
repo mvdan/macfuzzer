@@ -20,16 +20,14 @@
 package cc.mvdan.macfuzzer;
 
 public class NativeIOCtller {
-    private String mInterface;
-    private byte[] mAddr;
+    private String iface;
 
     static {
         System.loadLibrary("native_ioctller");
     }
 
-    public NativeIOCtller(Layer2Address macAddr) {
-        mAddr = macAddr.getAddress();
-        mInterface = macAddr.getInterfaceName();
+    public NativeIOCtller(String iface) {
+        this.iface = iface;
     }
 
     public native byte[] getCurrentMacAddr();

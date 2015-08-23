@@ -30,26 +30,29 @@ import java.util.Locale;
 
 public class MainActivity extends Activity {
 
-    private final String dev = "wlan0";
-    private Layer2Address mNewNet;
+    private static final String dev = "wlan0";
+    private NativeIOCtller ctller;
+    private Layer2Address addr;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+
+        ctller = new NativeIOCtller(dev);
+        addr = new Layer2Address();
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        refresh();
+    }
 
-        Layer2Address newNet = new Layer2Address();
-        newNet.setInterfaceName(dev);
-        mNewNet = newNet;
-        NativeIOCtller ctller = new NativeIOCtller(newNet);
-        newNet.setAddress(ctller.getCurrentMacAddr());
+    private void refresh() {
+        addr.setBytes(ctller.getCurrentMacAddr());
         TextView macField = (TextView) findViewById(R.id.textview_current_mac);
-        macField.setText(newNet.formatAddress());
+        macField.setText(addr.toString());
     }
 
     private String getInputStr(int id) {
@@ -115,30 +118,22 @@ public class MainActivity extends Activity {
         if (addr == null) {
             return;
         }
-        NativeIOCtller ctller = new NativeIOCtller(mNewNet);
         String uid = Integer.toString(ctller.getCurrentUID());
         FileStuff fs = new FileStuff(this);
         File exe = fs.copyBinaryFile();
-        /* TOCTOU but this let's us handle the failure easier */
 
         ProcessResult pr = fs.runBlob(dev, addr, uid);
-
-        mNewNet.setAddress(ctller.getCurrentMacAddr());
-        if (addr.compareTo(mNewNet.formatAddress()) == 0) {
-        } else {
-        }
-        TextView macField = (TextView) findViewById(R.id.textview_current_mac);
-        macField.setText(mNewNet.formatAddress());
+        refresh();
     }
 
     public void macReset(View view) {
-        NativeIOCtller ctller = new NativeIOCtller(mNewNet);
         setInputMac(ctller.getCurrentMacAddr());
     }
 
     public void macRand(View view) {
-        byte[] randAddr = mNewNet.generateNewAddress();
-        setInputMac(randAddr);
+        Layer2Address randAddr = new Layer2Address();
+        randAddr.randomize();
+        setInputMac(randAddr.getBytes());
     }
 
     public void macClear(View view) {
