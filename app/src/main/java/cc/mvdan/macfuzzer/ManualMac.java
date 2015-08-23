@@ -32,7 +32,6 @@ public class ManualMac extends Activity {
     // Let's hardcode wlan0, for now
     private String dev = "wlan0";
     private Layer2Address mNewNet;
-    private UserNotice mNotice;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +42,6 @@ public class ManualMac extends Activity {
     @Override
     public void onResume() {
         super.onResume();
-        mNotice = new UserNotice(this);
 
         Layer2Address newNet = new Layer2Address();
         newNet.setInterfaceName(dev);
@@ -119,16 +117,11 @@ public class ManualMac extends Activity {
         FileStuff fs = new FileStuff(this);
         File exe = fs.copyBinaryFile();
         /* TOCTOU but this let's us handle the failure easier */
-        if (exe == null) {
-            mNotice.showSuggestRestartAlert("noFileRestart");
-        }
 
         ProcessResult pr = fs.runBlob(dev, addr, uid);
 
         mNewNet.setAddress(ctller.getCurrentMacAddr());
         if (addr.compareTo(mNewNet.formatAddress()) == 0) {
-            mNotice.makeMeChangeStatusToast(R.string.change_success,
-                                            Toast.LENGTH_SHORT);
         } else {
             String msg = getString(R.string.current) + ": ";
             msg += mNewNet.formatAddress() + "\n";
@@ -140,10 +133,6 @@ public class ManualMac extends Activity {
             if (pr.getStdErr().compareTo("") != 0) {
                 msg += pr.getStdErr();
             }
-            mNotice.launchAndCloseAlert(msg,
-                            getString(R.string.change_failed),
-                            R.string.button_okay, 0, "do_nothing",
-                            "do_nothing", "failedChange");
 
         }
         TextView macField = (TextView) findViewById(R.id.manualmac_macaddress);
