@@ -24,6 +24,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -32,6 +33,8 @@ import java.io.File;
 import java.util.Locale;
 
 public class MainActivity extends Activity {
+
+    private static final String TAG = "MainActivity";
 
     private static final String dev = "wlan0";
     private NativeIOCtller ctller;
@@ -152,12 +155,10 @@ public class MainActivity extends Activity {
 
     public void macApply(View view) {
         byte[] bytes = getInputBytes();
-        String uid = Integer.toString(ctller.getCurrentUID());
-        FileStuff fs = new FileStuff(this);
-        File exe = fs.copyBinaryFile();
-
         Layer2Address addr = new Layer2Address(bytes);
-        ProcessResult pr = fs.runBlob(dev, addr.toString(), uid);
+        String uid = Integer.toString(ctller.getCurrentUID());
+
+        ChMacAddr.run(this, dev + " " + addr.toString() + " " + uid);
         refresh();
     }
 
