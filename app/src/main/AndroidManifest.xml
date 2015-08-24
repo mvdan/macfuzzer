@@ -4,7 +4,10 @@
     android:installLocation="auto"
     >
 
+    <!-- INTERNET is needed to fetch the current MAC address -->
     <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- SUPERUSER is needed to run chmacaddr as su -->
     <uses-permission android:name="android.permission.ACCESS_SUPERUSER" />
 
     <application
