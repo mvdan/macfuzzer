@@ -25,6 +25,7 @@ import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import java.io.File;
@@ -36,15 +37,15 @@ public class MainActivity extends Activity {
     private NativeIOCtller ctller;
     private Layer2Address addr;
 
-    private TextView[] byteViews;
+    private EditText[] byteViews;
 
     private void watchJump(int curN, int nextN) {
-        final TextView cur = byteViews[curN];
-        final TextView next = byteViews[nextN];
+        final EditText cur = byteViews[curN];
+        final EditText next = byteViews[nextN];
         cur.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (s.length() >= 2) {
-                    next.requestFocus();
+                    focusEnd(next);
                 }
             }
             public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
@@ -52,22 +53,28 @@ public class MainActivity extends Activity {
         });
     }
 
+    private static void focusEnd(EditText tv) {
+        tv.requestFocus();
+        tv.setSelection(tv.getText().length());
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         PRNGFixes.apply();
         setContentView(R.layout.main);
-        byteViews = new TextView[]{
-            (TextView) findViewById(R.id.edittext_mac_byte1),
-            (TextView) findViewById(R.id.edittext_mac_byte2),
-            (TextView) findViewById(R.id.edittext_mac_byte3),
-            (TextView) findViewById(R.id.edittext_mac_byte4),
-            (TextView) findViewById(R.id.edittext_mac_byte5),
-            (TextView) findViewById(R.id.edittext_mac_byte6),
+        byteViews = new EditText[]{
+            (EditText) findViewById(R.id.edittext_mac_byte1),
+            (EditText) findViewById(R.id.edittext_mac_byte2),
+            (EditText) findViewById(R.id.edittext_mac_byte3),
+            (EditText) findViewById(R.id.edittext_mac_byte4),
+            (EditText) findViewById(R.id.edittext_mac_byte5),
+            (EditText) findViewById(R.id.edittext_mac_byte6),
         };
         for (int i = 0; i < byteViews.length-1; i++) {
             byteViews[i].setFilters(new InputFilter[] {
-                new InputFilter.AllCaps()
+                new InputFilter.LengthFilter(2),
+                new InputFilter.AllCaps(),
             });
         }
         for (int i = 0; i < byteViews.length-1; i++) {
@@ -130,9 +137,17 @@ public class MainActivity extends Activity {
     }
 
     private void setInputBytes(byte[] bytes) {
+        if (bytes == null) {
+            for (int i = 0; i < byteViews.length; i++) {
+                setInputStr(i, null);
+            }
+            focusEnd(byteViews[0]);
+            return;
+        }
         for (int i = 0; i < byteViews.length; i++) {
             setInputByte(i, bytes[i]);
         }
+        focusEnd(byteViews[5]);
     }
 
     public void macApply(View view) {
@@ -157,9 +172,7 @@ public class MainActivity extends Activity {
     }
 
     public void macClear(View view) {
-        for (int i = 0; i < byteViews.length; i++) {
-            setInputStr(i, null);
-        }
+        setInputBytes(null);
     }
 
 }
