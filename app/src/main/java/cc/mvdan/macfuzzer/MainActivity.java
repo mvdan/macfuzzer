@@ -24,8 +24,8 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -41,6 +41,67 @@ public class MainActivity extends Activity {
     private Layer2Address addr;
 
     private EditText[] byteViews;
+    private boolean[] byteFilled;
+    private Button applyButton;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        PRNGFixes.apply();
+        setContentView(R.layout.main);
+        byteViews = new EditText[]{
+            (EditText) findViewById(R.id.edittext_mac_byte1),
+            (EditText) findViewById(R.id.edittext_mac_byte2),
+            (EditText) findViewById(R.id.edittext_mac_byte3),
+            (EditText) findViewById(R.id.edittext_mac_byte4),
+            (EditText) findViewById(R.id.edittext_mac_byte5),
+            (EditText) findViewById(R.id.edittext_mac_byte6),
+        };
+        byteFilled = new boolean[6];
+        applyButton = (Button) findViewById(R.id.button_mac_apply);
+        for (int i = 0; i < byteViews.length-1; i++) {
+            byteViews[i].setFilters(new InputFilter[] {
+                new InputFilter.LengthFilter(2),
+                new InputFilter.AllCaps(),
+            });
+        }
+        for (int i = 0; i < byteViews.length; i++) {
+            watchFilled(i);
+            if (i < 5) {
+                watchJump(i, i+1);
+            }
+        }
+
+        ctller = new NativeIOCtller(dev);
+        addr = new Layer2Address();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        refresh();
+    }
+
+    private void refresh() {
+        refreshApply();
+        refreshMac();
+    }
+
+    private void refreshApply() {
+        for (boolean b : byteFilled) {
+            if (!b) {
+                applyButton.setEnabled(false);
+                return;
+            }
+        }
+        applyButton.setEnabled(true);
+    }
+
+    private void refreshMac() {
+        addr.setBytes(ctller.getCurrentMacAddr());
+        TextView macField = (TextView) findViewById(R.id.textview_current_mac_addr);
+        macField.setText(addr.toString());
+    }
 
     private void watchJump(int curN, int nextN) {
         final EditText cur = byteViews[curN];
@@ -56,48 +117,21 @@ public class MainActivity extends Activity {
         });
     }
 
+    private void watchFilled(final int curN) {
+        final EditText cur = byteViews[curN];
+        cur.addTextChangedListener(new TextWatcher() {
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                byteFilled[curN] = (s.length() >= 2);
+                refreshApply();
+            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+            public void afterTextChanged(Editable s) { }
+        });
+    }
+
     private static void focusEnd(EditText tv) {
         tv.requestFocus();
         tv.setSelection(tv.getText().length());
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        PRNGFixes.apply();
-        setContentView(R.layout.main);
-        byteViews = new EditText[]{
-            (EditText) findViewById(R.id.edittext_mac_byte1),
-            (EditText) findViewById(R.id.edittext_mac_byte2),
-            (EditText) findViewById(R.id.edittext_mac_byte3),
-            (EditText) findViewById(R.id.edittext_mac_byte4),
-            (EditText) findViewById(R.id.edittext_mac_byte5),
-            (EditText) findViewById(R.id.edittext_mac_byte6),
-        };
-        for (int i = 0; i < byteViews.length-1; i++) {
-            byteViews[i].setFilters(new InputFilter[] {
-                new InputFilter.LengthFilter(2),
-                new InputFilter.AllCaps(),
-            });
-        }
-        for (int i = 0; i < byteViews.length-1; i++) {
-            watchJump(i, i+1);
-        }
-
-        ctller = new NativeIOCtller(dev);
-        addr = new Layer2Address();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        refresh();
-    }
-
-    private void refresh() {
-        addr.setBytes(ctller.getCurrentMacAddr());
-        TextView macField = (TextView) findViewById(R.id.textview_current_mac_addr);
-        macField.setText(addr.toString());
     }
 
     private String getInputStr(int n) {

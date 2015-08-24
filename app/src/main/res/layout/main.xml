@@ -122,6 +122,7 @@
         android:layout_height="wrap_content"
         android:text="@string/button_mac_apply"
         android:onClick="macApply"
+        android:enabled="false"
         />
     <Button
         android:id="@+id/button_mac_rand"

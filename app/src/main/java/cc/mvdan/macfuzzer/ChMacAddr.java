@@ -20,6 +20,7 @@ package cc.mvdan.macfuzzer;
 
 import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.IOException;
 
@@ -31,8 +32,18 @@ public class ChMacAddr {
     private static final String TAG = "ChMacAddr";
     private static final String EXECUTABLE = "chmacaddr";
 
+    private static void warn(Context context, String text) {
+        Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
+        Log.e(TAG, text);
+    }
+
+    private static void warn(Context context, String text, Throwable e) {
+        Toast.makeText(context, text + ": " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        Log.e(TAG, text, e);
+    }
+
     public static void run(Context context, String params) {
-        Log.d(TAG, "Running chmacaddr...");
+        Log.i(TAG, "Running chmacaddr...");
 
         Shell rootShell;
         try {
@@ -42,18 +53,24 @@ public class ChMacAddr {
             return;
         }
 
+        Log.i(TAG, "Command: " + EXECUTABLE + " " + params);
         SimpleExecutableCommand cmd = new SimpleExecutableCommand(context,
                 EXECUTABLE, params);
 
         try {
             rootShell.add(cmd).waitForFinish();
         } catch (Exception e) {
-            Log.e(TAG, "Exception while running chmacaddr", e);
+            warn(context, "Exception while running chmacaddr", e);
+        }
+        int exitCode = cmd.getExitCode();
+        if (exitCode != 0) {
+            warn(context, "chmacaddr errored:\n" + cmd.getOutput().trim());
         }
         try {
             rootShell.close();
         } catch (IOException e) {
-            Log.e(TAG, "Problem while closing shell", e);
+            warn(context, "Problem while closing shell", e);
         }
+        Log.i(TAG, "Command exited.");
     }
 }
