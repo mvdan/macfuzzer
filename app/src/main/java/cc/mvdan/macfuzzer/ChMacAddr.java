@@ -21,6 +21,8 @@ package cc.mvdan.macfuzzer;
 import android.content.Context;
 import android.util.Log;
 
+import java.io.IOException;
+
 import org.sufficientlysecure.rootcommands.Shell;
 import org.sufficientlysecure.rootcommands.command.SimpleExecutableCommand;
 
@@ -29,7 +31,7 @@ public class ChMacAddr {
     private static final String TAG = "ChMacAddr";
     private static final String EXECUTABLE = "chmacaddr";
 
-    public static boolean run(Context context, String params) {
+    public static void run(Context context, String params) {
         Log.d(TAG, "Running chmacaddr...");
 
         Shell rootShell;
@@ -37,7 +39,7 @@ public class ChMacAddr {
             rootShell = Shell.startRootShell();
         } catch (Exception e) {
             Log.e(TAG, "Problem while starting shell!", e);
-            return false;
+            return;
         }
 
         SimpleExecutableCommand cmd = new SimpleExecutableCommand(context,
@@ -47,9 +49,11 @@ public class ChMacAddr {
             rootShell.add(cmd).waitForFinish();
         } catch (Exception e) {
             Log.e(TAG, "Exception while running chmacaddr", e);
-            return false;
         }
-
-        return true;
+        try {
+            rootShell.close();
+        } catch (IOException e) {
+            Log.e(TAG, "Problem while closing shell", e);
+        }
     }
 }
