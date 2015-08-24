@@ -64,4 +64,6 @@ task renameExecutables(type: Copy) {
 }
 
 
-assemble.dependsOn renameExecutables
+tasks.withType(JavaCompile) {
+    compileTask -> compileTask.dependsOn renameExecutables
+}
