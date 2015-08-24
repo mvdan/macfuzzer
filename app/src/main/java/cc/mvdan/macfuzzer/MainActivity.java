@@ -21,6 +21,9 @@ package cc.mvdan.macfuzzer;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.InputFilter;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.TextView;
 
@@ -33,11 +36,43 @@ public class MainActivity extends Activity {
     private NativeIOCtller ctller;
     private Layer2Address addr;
 
+    private TextView[] byteViews;
+
+    private void watchJump(int curN, int nextN) {
+        final TextView cur = byteViews[curN];
+        final TextView next = byteViews[nextN];
+        cur.addTextChangedListener(new TextWatcher() {
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() >= 2) {
+                    next.requestFocus();
+                }
+            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+            public void afterTextChanged(Editable s) { }
+        });
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         PRNGFixes.apply();
         setContentView(R.layout.main);
+        byteViews = new TextView[]{
+            (TextView) findViewById(R.id.edittext_mac_byte1),
+            (TextView) findViewById(R.id.edittext_mac_byte2),
+            (TextView) findViewById(R.id.edittext_mac_byte3),
+            (TextView) findViewById(R.id.edittext_mac_byte4),
+            (TextView) findViewById(R.id.edittext_mac_byte5),
+            (TextView) findViewById(R.id.edittext_mac_byte6),
+        };
+        for (int i = 0; i < byteViews.length-1; i++) {
+            byteViews[i].setFilters(new InputFilter[] {
+                new InputFilter.AllCaps()
+            });
+        }
+        for (int i = 0; i < byteViews.length-1; i++) {
+            watchJump(i, i+1);
+        }
 
         ctller = new NativeIOCtller(dev);
         addr = new Layer2Address();
@@ -55,16 +90,16 @@ public class MainActivity extends Activity {
         macField.setText(addr.toString());
     }
 
-    private String getInputStr(int id) {
-        return ((TextView) findViewById(id)).getText().toString();
+    private String getInputStr(int n) {
+        return byteViews[n].getText().toString();
     }
 
-    private void setInputStr(int id, String str) {
-        ((TextView) findViewById(id)).setText(str);
+    private void setInputStr(int n, String str) {
+        byteViews[n].setText(str);
     }
 
-    private byte getInputByte(int id) {
-        String str = getInputStr(id);
+    private byte getInputByte(int n) {
+        String str = getInputStr(n);
 
         int i;
         try {
@@ -79,31 +114,25 @@ public class MainActivity extends Activity {
 
     }
 
-    private void setInputByte(int id, int b) {
+    private void setInputByte(int n, int b) {
         String str = String.format(Locale.ENGLISH,
                 "%02X", b & 0xFF).toUpperCase(Locale.ENGLISH);
 
-        setInputStr(id, str);
+        setInputStr(n, str);
     }
 
     private byte[] getInputBytes() {
-        byte b1 = getInputByte(R.id.edittext_mac_byte1);
-        byte b2 = getInputByte(R.id.edittext_mac_byte2);
-        byte b3 = getInputByte(R.id.edittext_mac_byte3);
-        byte b4 = getInputByte(R.id.edittext_mac_byte4);
-        byte b5 = getInputByte(R.id.edittext_mac_byte5);
-        byte b6 = getInputByte(R.id.edittext_mac_byte6);
-
-        return new byte[]{b1, b2, b3, b4, b5, b6};
+        byte[] bytes = new byte[6];
+        for (int i = 0; i < byteViews.length; i++) {
+            bytes[i] = getInputByte(i);
+        }
+        return bytes;
     }
 
     private void setInputBytes(byte[] bytes) {
-        setInputByte(R.id.edittext_mac_byte1, bytes[0]);
-        setInputByte(R.id.edittext_mac_byte2, bytes[1]);
-        setInputByte(R.id.edittext_mac_byte3, bytes[2]);
-        setInputByte(R.id.edittext_mac_byte4, bytes[3]);
-        setInputByte(R.id.edittext_mac_byte5, bytes[4]);
-        setInputByte(R.id.edittext_mac_byte6, bytes[5]);
+        for (int i = 0; i < byteViews.length; i++) {
+            setInputByte(i, bytes[i]);
+        }
     }
 
     public void macApply(View view) {
@@ -128,12 +157,9 @@ public class MainActivity extends Activity {
     }
 
     public void macClear(View view) {
-        setInputStr(R.id.edittext_mac_byte1, null);
-        setInputStr(R.id.edittext_mac_byte2, null);
-        setInputStr(R.id.edittext_mac_byte3, null);
-        setInputStr(R.id.edittext_mac_byte4, null);
-        setInputStr(R.id.edittext_mac_byte5, null);
-        setInputStr(R.id.edittext_mac_byte6, null);
+        for (int i = 0; i < byteViews.length; i++) {
+            setInputStr(i, null);
+        }
     }
 
 }
